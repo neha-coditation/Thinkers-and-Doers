@@ -5,81 +5,187 @@
       "name": "Does anyone actually need a strategy deck anymore?",
       "description": "Four people who make the decks and four people who have to act on them, on whether the artefact still earns its week.",
       "episodeDate": null,
-      "status": ["public"],
+      "status": [
+        "public"
+      ],
       "episodeNumber": 3,
       "format": "Panel",
       "durationMinutes": 58,
       "watchUrl": "#",
       "stillImage": "",
       "guests": [
-        {"id":"guest-001","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[{"provider":["LinkedIn"],"url":"#"}]},
-        {"id":"guest-002","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[{"provider":["X"],"url":"#"}]},
-        {"id":"guest-003","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]}
-      ]
+        {
+          "id": "guest-001",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": [
+            {
+              "provider": [
+                "LinkedIn"
+              ],
+              "url": "#"
+            }
+          ]
+        },
+        {
+          "id": "guest-002",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": [
+            {
+              "provider": [
+                "X"
+              ],
+              "url": "#"
+            }
+          ]
+        },
+        {
+          "id": "guest-003",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "video": ""
     },
     {
       "id": "episode-004",
       "name": "The first hire who tells the founder no.",
       "description": "Details coming soon.",
       "episodeDate": null,
-      "status": ["upcoming"],
+      "status": [
+        "upcoming"
+      ],
       "episodeNumber": 4,
       "format": "Conversation",
       "durationMinutes": null,
       "watchUrl": "#",
       "stillImage": "",
       "guests": [
-        {"id":"guest-004","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]},
-        {"id":"guest-005","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]}
-      ]
+        {
+          "id": "guest-004",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        },
+        {
+          "id": "guest-005",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "video": ""
     },
     {
       "id": "episode-005",
       "name": "Your design system is a museum. Now what?",
       "description": "Details coming soon.",
       "episodeDate": null,
-      "status": ["upcoming"],
+      "status": [
+        "upcoming"
+      ],
       "episodeNumber": 5,
       "format": "Working Session",
       "durationMinutes": null,
       "watchUrl": "#",
       "stillImage": "",
       "guests": [
-        {"id":"guest-006","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]},
-        {"id":"guest-007","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]},
-        {"id":"guest-008","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]}
-      ]
+        {
+          "id": "guest-006",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        },
+        {
+          "id": "guest-007",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        },
+        {
+          "id": "guest-008",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "video": ""
     },
     {
       "id": "episode-002",
       "name": "The work that looks easy from the outside.",
       "description": "Details coming soon.",
       "episodeDate": null,
-      "status": ["public"],
+      "status": [
+        "public"
+      ],
       "episodeNumber": 2,
       "format": "Conversation",
       "durationMinutes": 52,
       "watchUrl": "#",
       "stillImage": "",
       "guests": [
-        {"id":"guest-009","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]}
-      ]
+        {
+          "id": "guest-009",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "video": ""
     },
     {
       "id": "episode-001",
       "name": "Who is accountable when the model is wrong?",
       "description": "Details coming soon.",
       "episodeDate": null,
-      "status": ["public"],
+      "status": [
+        "public"
+      ],
       "episodeNumber": 1,
       "format": "Conversation",
       "durationMinutes": 64,
       "watchUrl": "#",
       "stillImage": "",
       "guests": [
-        {"id":"guest-010","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]},
-        {"id":"guest-011","name":"Guest Name","headline":"Role, Company","bio":"Guest bio will be added in Contentful.","headshot":"","socialLinks":[]}
-      ]
+        {
+          "id": "guest-010",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        },
+        {
+          "id": "guest-011",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "video": ""
     }
   ]
 }
