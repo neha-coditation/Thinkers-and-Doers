@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+
+<html><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+<link href="css/site.css" rel="stylesheet"/><script src="js/contentful-config.js"></script><script defer="True" src="js/app.js"></script></head>
+<body>
+
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<style>/* vietnamese */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/4719a3ae-cb77-4d31-bebf-27160571831c.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/cec2ffc0-72d8-480b-9ea4-a27e79616622.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/9b43c657-9368-40c3-822d-322f7251050e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 500;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/4719a3ae-cb77-4d31-bebf-27160571831c.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 500;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/cec2ffc0-72d8-480b-9ea4-a27e79616622.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 500;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/9b43c657-9368-40c3-822d-322f7251050e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/4719a3ae-cb77-4d31-bebf-27160571831c.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/cec2ffc0-72d8-480b-9ea4-a27e79616622.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/9b43c657-9368-40c3-822d-322f7251050e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/4719a3ae-cb77-4d31-bebf-27160571831c.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/cec2ffc0-72d8-480b-9ea4-a27e79616622.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/9b43c657-9368-40c3-822d-322f7251050e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/4719a3ae-cb77-4d31-bebf-27160571831c.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/cec2ffc0-72d8-480b-9ea4-a27e79616622.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/9b43c657-9368-40c3-822d-322f7251050e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/4719a3ae-cb77-4d31-bebf-27160571831c.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/cec2ffc0-72d8-480b-9ea4-a27e79616622.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("assets/9b43c657-9368-40c3-822d-322f7251050e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/10ae69d8-ba87-4111-8df3-6f2a97eb51b6.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/4d1a39d1-02e5-4888-9687-e2eee69505e9.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/0b4d0ebc-cb80-4b86-8756-819ba32a2f39.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/829e0fd6-22c1-4a26-b351-6368c0c0b77a.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/8c51446f-d220-4cb7-9d1c-fde087df1583.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/fdde5977-06d8-4953-a5c5-2fdf9b05ec88.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/e7423725-7343-4f62-a090-c8ae5ddee151.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/a8c35145-2b25-411c-8265-ce615ccd0000.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/85552132-4c60-444d-bf93-bd5ab404fb24.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/7594d593-f907-41e8-8f90-cdd5a139e31e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/b27f3db6-07c5-4ecf-91a4-0f90c6d08f3a.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/a9b9c350-57a4-4765-9105-528313828cac.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/3253e7dc-650b-403c-9054-ce672b40c518.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/3d192d7c-6686-436c-86f0-53b54840020a.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #0C0B0A; color: #F2F0EA; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: inherit; }
+  ::selection { background: #F2F0EA; color: #0C0B0A; }
+  @keyframes tdmar { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes tdmarR { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  @keyframes tdrise { from { transform: translateY(105%) rotate(3deg); opacity: 0; } to { transform: translateY(0) rotate(0deg); opacity: 1; } }
+  @keyframes tdfade { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes tdpulse { 0% { box-shadow: 0 0 0 0 rgba(242,240,234,0.55); } 70% { box-shadow: 0 0 0 12px rgba(242,240,234,0); } 100% { box-shadow: 0 0 0 0 rgba(242,240,234,0); } }
+  @keyframes tddrift { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+  @keyframes tdmark { from { opacity: 0; transform: scale(0.72) rotate(-7deg); } to { opacity: 1; transform: scale(1) rotate(0deg); } }
+  @keyframes tdorbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes tdvennL { from { transform: translateX(58px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes tdvennR { from { transform: translateX(-58px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes tdspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes tdspinR { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+  @keyframes tdgrid { from { background-position: 0 0, 0 0; } to { background-position: 0 96px, 96px 0; } }
+  @keyframes tdring { 0% { transform: scale(1); opacity: 0.5; } 70% { transform: scale(1.5); opacity: 0; } 100% { transform: scale(1.5); opacity: 0; } }
+  @keyframes tdcycle {
+    0%, 15% { transform: translateY(0); }
+    20%, 35% { transform: translateY(-20%); }
+    40%, 55% { transform: translateY(-40%); }
+    60%, 75% { transform: translateY(-60%); }
+    80%, 100% { transform: translateY(-80%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+  .td-hero > div:first-child { min-width: 0; }
+  header.td-pad a { white-space: nowrap; }
+  @media (max-width: 1180px) {
+    header.td-pad img { height: 68px !important; }
+  }
+  @media (max-width: 1040px) {
+    .td-navlinks { display: none !important; }
+    header.td-pad img { height: 56px !important; }
+  }
+  @media (max-width: 940px) {
+    .td-hero { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .td-2 { grid-template-columns: 1fr !important; }
+    .td-3 { grid-template-columns: 1fr !important; }
+    .td-sess { grid-template-columns: 64px 1fr 44px !important; }
+    .td-sessmeta { display: none !important; }
+  }
+  @media (max-width: 860px) {
+    .td-4 { grid-template-columns: 1fr 1fr !important; }
+    .td-pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .td-navlinks { display: none !important; }
+    .td-row { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+    .td-card { flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; }
+  }
+</style>
+
+<div style="font-family: Archivo, Helvetica, Arial, sans-serif; background: #0C0B0A; color: #F2F0EA; overflow-x: clip;">
+<header class="td-pad" data-comment-anchor="7b2ddf3c8a-header" style="position: relative; z-index: 60; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px 48px; border-bottom: 1px solid rgba(242,240,234,0.12);">
+<a href="#top" style="display: flex; align-items: center;">
+<img alt="Thinkers &amp; Doers" src="assets/d947795f-b43b-48bf-98f6-3fd91f09ae58.png" style="height: 96px; width: auto; filter: invert(1); display: block; transition: opacity 300ms ease"/>
+</a>
+<nav class="td-navlinks" style="display: flex; align-items: center; gap: 36px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;">
+<a href="#latest" style="position: relative; padding-bottom: 4px; border-bottom: 1px solid rgba(242,240,234,0.18); transition: border-color 250ms ease, opacity 250ms ease; opacity: 0.7;">Latest</a>
+<a href="#upcoming" style="position: relative; padding-bottom: 4px; border-bottom: 1px solid rgba(242,240,234,0.18); transition: border-color 250ms ease, opacity 250ms ease; opacity: 0.7;">Upcoming</a>
+<a href="#table" style="position: relative; padding-bottom: 4px; border-bottom: 1px solid rgba(242,240,234,0.18); transition: border-color 250ms ease, opacity 250ms ease; opacity: 0.7;">The table</a>
+<a href="#sessions" style="position: relative; padding-bottom: 4px; border-bottom: 1px solid rgba(242,240,234,0.18); transition: border-color 250ms ease, opacity 250ms ease; opacity: 0.7;">Archive</a>
+</nav>
+<a href="#apply" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; background: #F2F0EA; color: #0C0B0A; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 999px; transition: transform 260ms cubic-bezier(.2,.8,.2,1), background 260ms ease;">Take a seat</a>
+</header>
+<section id="top" style="position: relative; min-height: calc(100vh - 140px); display: flex; align-items: center; overflow: hidden; border-bottom: 1px solid rgba(242,240,234,0.14);">
+<div style="position: absolute; inset: -96px; background-image: linear-gradient(rgba(242,240,234,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(242,240,234,0.055) 1px, transparent 1px); background-size: 96px 96px; pointer-events: none; animation: tdgrid 14s linear infinite;"></div>
+<div style="position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 0%, transparent 40%, rgba(12,11,10,0.85) 100%); pointer-events: none;"></div>
+<div style="position: absolute; width: 780px; height: 780px; left: 0; top: 0; margin: -390px 0 0 -390px; border-radius: 999px; background: radial-gradient(circle, rgba(242,240,234,0.10) 0%, rgba(242,240,234,0.03) 38%, transparent 68%); pointer-events: none; transition: transform 600ms cubic-bezier(.2,.8,.2,1); will-change: transform;"></div>
+<div class="td-pad" data-parallax="1" style="position: relative; width: 100%; max-width: 1520px; margin: 0 auto; padding: 84px 48px 88px; will-change: transform;">
+<div class="td-hero" style="display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(272px, 0.8fr); gap: 48px; align-items: start;">
+<div>
+<div style="display: flex; align-items: center; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(242,240,234,0.6); margin-bottom: 44px; opacity: 0; animation: tdfade 700ms cubic-bezier(.2,.8,.2,1) 120ms forwards;">
+<span style="width: 8px; height: 8px; border-radius: 999px; background: #F2F0EA; display: none; animation: tdpulse 2.6s ease-out infinite"></span>
+            A technology collective
+          </div>
+<h1 style="font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(44px, 6.4vw, 92px); line-height: 0.9; letter-spacing: -0.045em; margin: 0 0 36px; text-transform: uppercase;">
+<span style="display: block; overflow: hidden; padding-bottom: 0.04em;"><span style="display: inline-block; animation: tdrise 900ms cubic-bezier(.16,1,.3,1) 100ms both;">Where</span></span>
+<span style="display: block; overflow: hidden; padding-bottom: 0.04em;"><span style="display: inline-block; animation: tdrise 900ms cubic-bezier(.16,1,.3,1) 220ms both;">thinking gets</span></span>
+<span style="display: block; overflow: hidden; padding-bottom: 0.08em;"><span style="display: inline-block; animation: tdrise 900ms cubic-bezier(.16,1,.3,1) 340ms both; font-family: 'Instrument Serif', serif; font-weight: 400; font-style: italic; text-transform: none; letter-spacing: -0.02em;"><span style="display: inline-block; overflow: hidden; height: 1.04em; vertical-align: bottom;"><span style="display: block; animation: tdcycle 13s cubic-bezier(.76,0,.24,1) infinite;"><span style="display: block; height: 1.04em; line-height: 1.04em;">built.</span><span style="display: block; height: 1.04em; line-height: 1.04em;">tested.</span><span style="display: block; height: 1.04em; line-height: 1.04em;">defended.</span><span style="display: block; height: 1.04em; line-height: 1.04em;">rebuilt.</span><span style="display: block; height: 1.04em; line-height: 1.04em;">built.</span></span></span></span></span>
+</h1>
+<p data-comment-anchor="f48446fb32-p" style="font-size: clamp(17px, 1.5vw, 21px); line-height: 1.5; color: rgba(242,240,234,0.78); max-width: 38ch; margin: 0 0 48px; text-wrap: pretty; opacity: 0; animation: tdfade 800ms cubic-bezier(.2,.8,.2,1) 560ms forwards;">A recurring table where thinkers and doers meet to discuss, debate and trade hard-won experience at the frontier of technology and business — the people working out what comes next, beside the people shipping it.</p>
+<div class="td-row" style="display: flex; align-items: center; gap: 16px; opacity: 0; animation: tdfade 800ms cubic-bezier(.2,.8,.2,1) 700ms forwards;">
+<a href="#apply" style="display: inline-flex; align-items: center; gap: 14px; padding: 19px 34px; background: #F2F0EA; color: #0C0B0A; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 999px; transition: transform 300ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms ease;">Claim a chair <span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px;">→</span></a>
+<a href="#upcoming" style="display: inline-flex; align-items: center; gap: 12px; padding: 19px 32px; border: 1px solid rgba(242,240,234,0.32); border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; transition: border-color 300ms ease, background 300ms ease, transform 300ms cubic-bezier(.2,.8,.2,1);">What's next</a>
+</div>
+</div>
+<div style="opacity: 0; animation: tdfade 900ms cubic-bezier(.2,.8,.2,1) 820ms forwards; display: flex; flex-direction: column; align-items: center; gap: 30px;">
+<div class="td-venn" style="width: 100%; max-width: 520px;"><div style="position: relative; width: 100%; aspect-ratio: 520 / 470; animation: tddrift 6s ease-in-out infinite alternate;">
+<div style="position: absolute; left: 0; top: 12.3%; width: 66.15%; aspect-ratio: 1; border-radius: 999px; border: 1px solid rgba(242,240,234,0.5); background: radial-gradient(circle at 32% 34%, rgba(242,240,234,0.11), rgba(242,240,234,0.015) 72%); animation: tdvennL 1200ms cubic-bezier(.16,1,.3,1) 850ms both;"></div>
+<div style="position: absolute; left: 33.85%; top: 12.3%; width: 66.15%; aspect-ratio: 1; border-radius: 999px; border: 1px solid rgba(242,240,234,0.5); background: radial-gradient(circle at 68% 34%, rgba(242,240,234,0.11), rgba(242,240,234,0.015) 72%); animation: tdvennR 1200ms cubic-bezier(.16,1,.3,1) 850ms both;"></div>
+<div style="position: absolute; left: 4.2%; top: 17%; width: 57.7%; aspect-ratio: 1; border-radius: 999px; border: 1px dashed rgba(242,240,234,0.16); animation: tdorbit 72s linear infinite;"></div>
+<div style="position: absolute; left: 38.1%; top: 17%; width: 57.7%; aspect-ratio: 1; border-radius: 999px; border: 1px dotted rgba(242,240,234,0.16); animation: tdorbit 96s linear infinite reverse;"></div>
+<div style="position: absolute; left: 0; top: 12.3%; width: 66.15%; aspect-ratio: 1; border-radius: 999px; overflow: hidden; opacity: 0; animation: tdfade 900ms ease 1450ms forwards;">
+<div style="width: 100%; aspect-ratio: 1; border-radius: 999px; margin-left: 51.2%; background: rgba(242,240,234,0.14);"></div>
+</div>
+<div style="position: absolute; left: 50%; top: 49%; width: 36.7%; aspect-ratio: 1; margin-left: -18.35%; transform: translateY(-50%);">
+<div style="width: 100%; height: 100%; border-radius: 999px; border: 1px solid rgba(242,240,234,0.5); animation: tdring 4.2s ease-out 1700ms infinite both;"></div>
+</div>
+<div style="position: absolute; left: 50%; top: 49%; width: 29.2%; margin-left: -14.6%; transform: translateY(-50%);">
+<img alt="Thinkers &amp; Doers" src="assets/7e81a71a-c935-4d24-8d67-53e2f6688cd4.png" style="display: block; width: 100%; height: auto; filter: invert(1); opacity: 0; animation: tdmark 1000ms cubic-bezier(.16,1,.3,1) 1550ms forwards;"/>
+</div>
+<div style="position: absolute; left: 0; top: 12.3%; width: 33.85%; height: 73.2%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; animation: tdvennL 1200ms cubic-bezier(.16,1,.3,1) 1000ms both;">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase;">Thinkers</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,240,234,0.45); text-align: center; line-height: 1.7;">Research<br/>Strategy</span>
+</div>
+<div style="position: absolute; left: 66.15%; top: 12.3%; width: 33.85%; height: 73.2%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; animation: tdvennR 1200ms cubic-bezier(.16,1,.3,1) 1000ms both;">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase;">Doers</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,240,234,0.45); text-align: center; line-height: 1.7;">Building<br/>Operating</span>
+</div>
+<div style="position: absolute; left: 0; right: 0; bottom: 1.7%; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(242,240,234,0.5); opacity: 0; animation: tdfade 800ms ease 1900ms forwards;">The overlap is the whole show</div>
+</div></div>
+<a href="#upcoming" style="width: 100%; max-width: 340px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border: 1px solid rgba(242,240,234,0.22); transition: background 320ms ease, border-color 320ms ease, transform 320ms cubic-bezier(.2,.8,.2,1);">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(242,240,234,0.55);">Next · № 004</span>
+<span style="font-size: 14px; font-weight: 600; letter-spacing: -0.01em; text-align: right;">Who owns the decision<br/>when the model makes it?</span>
+</a>
+</div>
+</div>
+</div>
+<div style="position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(242,240,234,0.4); opacity: 0; animation: tdfade 800ms ease 1200ms forwards">Scroll</div>
+</section>
+<div style="background: #F2F0EA; color: #0C0B0A; padding: 22px 0; overflow: hidden;">
+<div style="display: flex; width: max-content; animation: tdmar 38s linear infinite;">
+<div style="display: flex; align-items: center; gap: 40px; padding-right: 40px; font-weight: 800; font-size: clamp(18px, 2vw, 26px); letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap;">
+<span>Artificial intelligence</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Business strategy</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Founders</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Engineering</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Product</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Design</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+</div>
+<div aria-hidden="true" style="display: flex; align-items: center; gap: 40px; padding-right: 40px; font-weight: 800; font-size: clamp(18px, 2vw, 26px); letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap;">
+<span>Artificial intelligence</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Business strategy</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Founders</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Engineering</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Product</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+<span>Design</span><span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; text-transform: none;">&amp;</span>
+</div>
+</div>
+</div>
+<section class="td-pad" id="latest" style="padding: 116px 48px 104px; max-width: 1360px; margin: 0 auto;">
+<div class="td-row" data-reveal="1" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 48px; opacity: 0; transform: translateY(20px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1);">
+<div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(242,240,234,0.5); margin-bottom: 20px;">01 — Latest episode</div>
+<h2 style="font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(34px, 4.4vw, 62px); line-height: 0.96; letter-spacing: -0.04em; margin: 0; text-transform: uppercase;">Out now</h2>
+</div>
+<a href="#sessions" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(242,240,234,0.6); padding-bottom: 4px; border-bottom: 1px solid rgba(242,240,234,0.25); transition: color 250ms ease, border-color 250ms ease;">All episodes →</a>
+</div>
+<div class="td-2" data-reveal="1" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: start; opacity: 0; transform: translateY(24px); transition: opacity 900ms cubic-bezier(.2,.8,.2,1), transform 900ms cubic-bezier(.2,.8,.2,1);"><div class="td-2" data-reveal="1" id="latest-episode" style="display:grid;grid-template-columns:1.5fr 1fr;gap:48px;align-items:start;opacity:0;transform:translateY(24px)"><div class="td-episode-media" id="latest-media"></div><div id="latest-content"></div></div></div>
+</section>
+<section class="td-pad" data-comment-anchor="0941ca6dfa-section" style="padding: 132px 48px; max-width: 1180px; margin: 0 auto;">
+<div data-reveal="1" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(242,240,234,0.5); margin-bottom: 40px; opacity: 0; transform: translateY(20px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1);">The premise</div>
+<p data-reveal="1" style="font-size: clamp(28px, 3.6vw, 50px); line-height: 1.16; letter-spacing: -0.035em; font-weight: 600; margin: 0 0 40px; text-wrap: pretty; opacity: 0; transform: translateY(24px); transition: opacity 900ms cubic-bezier(.2,.8,.2,1) 80ms, transform 900ms cubic-bezier(.2,.8,.2,1) 80ms;">Strategists talk to strategists. Builders talk to builders. The conversation that would actually move the work forward sits in the gap between them. <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400;">That gap is the show.</span></p>
+<p data-comment-anchor="e5106dffe0-p" data-reveal="1" style="font-size: 19px; line-height: 1.65; color: rgba(242,240,234,0.68); max-width: 62ch; margin: 0; text-wrap: pretty; opacity: 0; transform: translateY(24px); transition: opacity 900ms cubic-bezier(.2,.8,.2,1) 180ms, transform 900ms cubic-bezier(.2,.8,.2,1) 180ms;">Thinkers and Doers is a running series. Researchers, founders, operators and analysts take the same subject from two directions, and the cast changes with the question. Nobody has to land on the same answer, but everybody leaves holding the other side's reasoning. Every episode goes out on video the way it happened.</p>
+</section>
+<section data-comment-anchor="7a47d15aa6-section" id="upcoming" style="background: #F2F0EA; color: #0C0B0A; padding: 116px 0;">
+<div class="td-pad" style="max-width: 1360px; margin: 0 auto; padding: 0 48px;">
+<div class="td-row" data-reveal="1" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 56px; opacity: 0; transform: translateY(20px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1);">
+<div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(12,11,10,0.55); margin-bottom: 20px;">02 — Upcoming</div>
+<h2 style="font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(34px, 4.4vw, 62px); line-height: 0.96; letter-spacing: -0.04em; margin: 0; text-transform: uppercase;">Pull up a chair</h2>
+</div>
+<p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: rgba(12,11,10,0.55); margin: 0; max-width: 32ch; line-height: 1.8;">Dates, titles, stills and guests are placeholders — drop in the real schedule.</p>
+</div>
+<div class="td-episode-list" id="upcoming-list" style="display: flex; flex-direction: column; gap: 18px;"></div>
+</div></section>
+<section class="td-pad" id="format" style="padding: 128px 48px; max-width: 1360px; margin: 0 auto;">
+<div class="td-row" data-reveal="1" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 64px; opacity: 0; transform: translateY(20px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1);">
+<div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(242,240,234,0.5); margin-bottom: 20px;">03 — Three shapes</div>
+<h2 style="font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(34px, 4.4vw, 62px); line-height: 0.96; letter-spacing: -0.04em; margin: 0; text-transform: uppercase;">The room bends<br/>to the guest</h2>
+</div>
+<p style="font-size: 18px; line-height: 1.6; color: rgba(242,240,234,0.68); margin: 0; max-width: 34ch; text-wrap: pretty;">Same overlap, different shape. We pick the format once we know who is sitting down and what they are working on.</p>
+</div>
+<div class="td-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+<div data-reveal="1" style="border: 1px solid rgba(242,240,234,0.2); padding: 44px 36px 48px; transition: background 420ms ease, transform 420ms cubic-bezier(.2,.8,.2,1), border-color 420ms ease; opacity: 0; transform: translateY(26px);">
+<div style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; line-height: 1; margin-bottom: 32px; color: rgba(242,240,234,0.5);">I</div>
+<h3 style="font-size: 24px; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 14px; text-transform: uppercase;">The panel</h3>
+<p style="font-size: 16px; line-height: 1.65; color: rgba(242,240,234,0.68); margin: 0;">Six chairs, one question, and both halves of it in the room. The useful answer usually sits between them.</p>
+</div>
+<div data-reveal="1" style="border: 1px solid rgba(242,240,234,0.2); padding: 44px 36px 48px; transition: background 420ms ease, transform 420ms cubic-bezier(.2,.8,.2,1), border-color 420ms ease; opacity: 0; transform: translateY(26px);">
+<div style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; line-height: 1; margin-bottom: 32px; color: rgba(242,240,234,0.5);">II</div>
+<h3 style="font-size: 24px; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 14px; text-transform: uppercase;">The conversation</h3>
+<p style="font-size: 16px; line-height: 1.65; color: rgba(242,240,234,0.68); margin: 0;">One guest, all the time they need. For work that falls apart when you compress it into a soundbite.</p>
+</div>
+<div data-reveal="1" style="border: 1px solid rgba(242,240,234,0.2); padding: 44px 36px 48px; transition: background 420ms ease, transform 420ms cubic-bezier(.2,.8,.2,1), border-color 420ms ease; opacity: 0; transform: translateY(26px);">
+<div style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 56px; line-height: 1; margin-bottom: 32px; color: rgba(242,240,234,0.5);">III</div>
+<h3 style="font-size: 24px; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 14px; text-transform: uppercase;">The working session</h3>
+<p style="font-size: 16px; line-height: 1.65; color: rgba(242,240,234,0.68); margin: 0;">Bring a live problem from your own desk. Leave with something you can act on this week.</p>
+</div>
+</div>
+</section>
+<section class="td-pad" data-comment-anchor="4e20027e70-section" id="table" style="padding: 0 48px 128px; max-width: 1360px; margin: 0 auto;">
+<div class="td-row" data-reveal="1" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-bottom: 36px; border-bottom: 1px solid rgba(242,240,234,0.2); margin-bottom: 56px; opacity: 0; transform: translateY(20px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1);">
+<div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(242,240,234,0.5); margin-bottom: 20px;">04 — At the table</div>
+<h2 style="font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(34px, 4.4vw, 62px); line-height: 0.96; letter-spacing: -0.04em; margin: 0; text-transform: uppercase;">Voices at the table</h2>
+</div>
+<p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: rgba(242,240,234,0.5); margin: 0; max-width: 30ch; line-height: 1.8;">A running cast that changes with the question — placeholder names and headshots for now.</p>
+</div>
+<div class="td-4" id="guest-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px 26px;"></div>
+</section>
+<div style="background: #F2F0EA; color: #0C0B0A; padding: 20px 0; overflow: hidden;">
+<div style="display: flex; width: max-content; animation: tdmarR 46s linear infinite;">
+<div style="display: flex; align-items: center; gap: 36px; padding-right: 36px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;">
+<span>No house line</span><span style="opacity: 0.4;">/</span><span>Both halves in the room</span><span style="opacity: 0.4;">/</span><span>Doers get the last word</span><span style="opacity: 0.4;">/</span><span>Published the way it happened</span><span style="opacity: 0.4;">/</span>
+</div>
+<div aria-hidden="true" style="display: flex; align-items: center; gap: 36px; padding-right: 36px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;">
+<span>No house line</span><span style="opacity: 0.4;">/</span><span>Both halves in the room</span><span style="opacity: 0.4;">/</span><span>Doers get the last word</span><span style="opacity: 0.4;">/</span><span>Published the way it happened</span><span style="opacity: 0.4;">/</span>
+</div>
+</div>
+</div>
+<section class="td-pad" id="sessions" style="padding: 128px 48px; max-width: 1360px; margin: 0 auto;">
+<div class="td-row" data-reveal="1" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 56px; opacity: 0; transform: translateY(20px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1);">
+<div>
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(242,240,234,0.5); margin-bottom: 20px;">05 — Archive</div>
+<h2 style="font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(34px, 4.4vw, 62px); line-height: 0.96; letter-spacing: -0.04em; margin: 0; text-transform: uppercase;">Every episode so far</h2>
+</div>
+<p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: rgba(242,240,234,0.5); margin: 0; max-width: 30ch; line-height: 1.8;">Placeholder titles — replace with the real episode archive and links.</p>
+</div>
+<div id="archive-list" style="border-top: 1px solid rgba(242,240,234,0.18);"></div>
+</section>
+<section id="apply" style="background: #F2F0EA; color: #0C0B0A; padding: 120px 0;">
+<div class="td-pad" style="max-width: 1360px; margin: 0 auto; padding: 0 48px;">
+<div class="td-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;">
+<div data-reveal="1" style="opacity: 0; transform: translateY(24px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1);">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(12,11,10,0.55); margin-bottom: 24px;">06 — The empty chair</div>
+<h2 style="font-family: Archivo, sans-serif; font-weight: 900; font-size: clamp(38px, 5.2vw, 76px); line-height: 0.92; letter-spacing: -0.045em; margin: 0 0 26px; text-transform: uppercase;">Bring us<br/>a question</h2>
+<p style="font-size: 19px; line-height: 1.6; color: rgba(12,11,10,0.72); margin: 0 0 30px; max-width: 40ch; text-wrap: pretty;">Tell us the question you would put to the room, and what you have built or studied that gives you a side in it. Every application gets read by a person.</p>
+<p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: rgba(12,11,10,0.55); margin: 0; line-height: 1.9;">No fixed schedule yet.<br/>Sessions run when the question is worth the room.</p>
+</div>
+<form data-reveal="1" id="application-form" style="display: flex; flex-direction: column; gap: 22px; opacity: 0; transform: translateY(24px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1) 120ms, transform 800ms cubic-bezier(.2,.8,.2,1) 120ms;">
+<label style="display: flex; flex-direction: column; gap: 9px;">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">Name</span>
+<input placeholder="Your name" style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; transition: border-color 300ms ease;" type="text"/>
+</label>
+<label style="display: flex; flex-direction: column; gap: 9px;">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">Email</span>
+<input placeholder="you@company.com" style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; transition: border-color 300ms ease;" type="email"/>
+</label>
+<label style="display: flex; flex-direction: column; gap: 9px;">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">The question you would bring</span>
+<textarea placeholder="One sentence is enough." rows="3" style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; resize: vertical; transition: border-color 300ms ease;"></textarea>
+</label>
+<button style="margin-top: 12px; align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; padding: 19px 36px; background: #0C0B0A; color: #F2F0EA; font-family: Archivo, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: none; border-radius: 999px; cursor: pointer; transition: transform 300ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms ease;" type="submit">Send application</button>
+</form>
+</div>
+</div>
+</section>
+<footer style="background: #0C0B0A; color: #F2F0EA; padding: 76px 0 46px;">
+<div class="td-pad" style="max-width: 1360px; margin: 0 auto; padding: 0 48px;">
+<img alt="Thinkers &amp; Doers" src="assets/d947795f-b43b-48bf-98f6-3fd91f09ae58.png" style="height: 52px; width: auto; filter: invert(1); display: block; margin-bottom: 60px;"/>
+<div class="td-row" style="display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-top: 36px; border-top: 1px solid rgba(242,240,234,0.2); font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: rgba(242,240,234,0.55);">
+<span>thethinkersanddoers.studio</span>
+<div style="display: flex; gap: 30px;">
+<a href="#upcoming" style="transition: color 250ms ease;">Upcoming</a>
+<a href="#apply" style="transition: color 250ms ease;">Apply</a>
+<a href="#top" style="transition: color 250ms ease;">Top</a>
+</div>
+<span>© 2026</span>
+</div>
+</div>
+</footer>
+</div>
+
+
+</body></html>

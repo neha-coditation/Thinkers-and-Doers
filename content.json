@@ -1,0 +1,61 @@
+{
+  "episodes": [
+    {
+      "number": 3,
+      "status": "latest",
+      "title": "Does anyone actually need a strategy deck anymore?",
+      "format": "Panel",
+      "duration": 58,
+      "description": "Four people who make the decks and four people who have to act on them, on whether the artefact still earns its week.",
+      "watchUrl": "#",
+      "image": "",
+      "guests": [
+        {
+          "name": "Guest Name",
+          "role": "Role",
+          "company": "Company",
+          "image": ""
+        },
+        {
+          "name": "Guest Name",
+          "role": "Role",
+          "company": "Company",
+          "image": ""
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "status": "upcoming",
+      "title": "The first hire who tells the founder no.",
+      "format": "Conversation",
+      "duration": "",
+      "description": "2 guests \u00b7 names announced soon",
+      "watchUrl": "#",
+      "image": "",
+      "guests": []
+    },
+    {
+      "number": 5,
+      "status": "upcoming",
+      "title": "Your design system is a museum. Now what?",
+      "format": "Working session",
+      "duration": "",
+      "description": "3 guests \u00b7 names announced soon",
+      "watchUrl": "#",
+      "image": "",
+      "guests": []
+    },
+    {
+      "number": 1,
+      "status": "archive",
+      "title": "Who is accountable when the model is wrong?",
+      "format": "Conversation",
+      "duration": 64,
+      "description": "",
+      "watchUrl": "#",
+      "image": "",
+      "guests": []
+    }
+  ]
+}
