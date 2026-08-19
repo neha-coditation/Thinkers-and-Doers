@@ -39,6 +39,105 @@
       : (link.provider || "");
   }
 
+
+  function getVideoUrl(video) {
+    if (!video) return "";
+
+    if (typeof video === "string") {
+      return video.startsWith("//") ? "https:" + video : video;
+    }
+
+    if (video.url) {
+      return video.url.startsWith("//") ? "https:" + video.url : video.url;
+    }
+
+    if (video.fields?.file?.url) {
+      const url = video.fields.file.url;
+      return url.startsWith("//") ? "https:" + url : url;
+    }
+
+    return "";
+  }
+
+  function ensureVideoModal() {
+    if (document.querySelector(".td-video-modal")) return;
+
+    document.body.insertAdjacentHTML("beforeend", `
+      <div class="td-video-modal" aria-hidden="true">
+        <div class="td-video-modal__panel" role="dialog" aria-modal="true" aria-label="Episode video">
+          <button class="td-video-modal__close" type="button" aria-label="Close video">×</button>
+          <video controls playsinline preload="metadata"></video>
+        </div>
+      </div>
+    `);
+
+    const modal = document.querySelector(".td-video-modal");
+    const video = modal.querySelector("video");
+    const close = modal.querySelector(".td-video-modal__close");
+
+    const closeModal = () => {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("td-video-modal-open");
+    };
+
+    close.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closeModal();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && modal.classList.contains("is-open")) {
+        closeModal();
+      }
+    });
+
+    window.openEpisodeVideo = url => {
+      if (!url) return;
+
+      video.src = url;
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("td-video-modal-open");
+
+      const playPromise = video.play();
+      if (playPromise?.catch) playPromise.catch(() => {});
+    };
+  }
+
+  function videoButton(url, label = "Watch the episode") {
+    if (!url) return "";
+
+    return `
+      <button
+        type="button"
+        class="td-watch-video"
+        data-video-url="${escapeHTML(url)}"
+        style="
+          display:inline-flex;
+          align-items:center;
+          gap:12px;
+          padding:17px 30px;
+          background:#F2F0EA;
+          color:#0C0B0A;
+          font-size:13px;
+          font-weight:700;
+          letter-spacing:.1em;
+          text-transform:uppercase;
+          border-radius:999px;
+          border:0;
+          cursor:pointer;
+        "
+      >
+        ▶ ${escapeHTML(label)}
+      </button>
+    `;
+  }
+
   function normalizeGuest(guest) {
     return {
       id: guest?.id || "",
@@ -68,6 +167,7 @@
       format: episode?.format || "Conversation",
       durationMinutes: episode?.durationMinutes ?? episode?.duration ?? null,
       watchUrl: episode?.watchUrl || "#",
+      videoUrl: getVideoUrl(episode?.video || episode?.videoUrl || ""),
       stillImage: getImageUrl(episode?.stillImage || episode?.image || ""),
       guests: Array.isArray(episode?.guests)
         ? episode.guests.map(normalizeGuest)
@@ -144,6 +244,7 @@
           format: f.format,
           durationMinutes: f.durationMinutes,
           watchUrl: f.watchUrl,
+          video: assetUrl(f.video),
           stillImage: assetUrl(f.stillImage),
           guests: guests(f.guests)
         });
@@ -160,13 +261,23 @@
     const media = $("#latest-media"), content = $("#latest-content");
     if (!media || !content) return;
 
-    media.innerHTML = `
-      <a href="${escapeHTML(e.watchUrl)}" ${e.watchUrl !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}
-         style="display:block;height:100%;position:relative">
-        ${e.stillImage ? `<img src="${escapeHTML(e.stillImage)}" alt="${escapeHTML(e.name)}">` : ""}
-        <span class="td-play">▶</span>
-        <span style="position:absolute;left:18px;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,240,234,.7);background:#0C0B0A;padding:6px 10px;">episode still</span>
-      </a>`;
+    media.innerHTML = e.videoUrl
+      ? `
+        <button
+          type="button"
+          class="td-video-trigger"
+          data-video-url="${escapeHTML(e.videoUrl)}"
+          aria-label="Play ${escapeHTML(e.name)}"
+          style="display:block;width:100%;height:100%;padding:0;border:0;background:#0C0B0A;position:relative;cursor:pointer"
+        >
+          ${e.stillImage ? `<img src="${escapeHTML(e.stillImage)}" alt="${escapeHTML(e.name)}">` : ""}
+          <span class="td-play">▶</span>
+          <span style="position:absolute;left:18px;bottom:18px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,240,234,.7);background:#0C0B0A;padding:6px 10px;">play episode</span>
+        </button>`
+      : `
+        <div style="height:100%;position:relative">
+          ${e.stillImage ? `<img src="${escapeHTML(e.stillImage)}" alt="${escapeHTML(e.name)}">` : ""}
+        </div>`;
 
     const guests = e.guests || [];
     const meta = [e.format, guests.length ? `${guests.length} guest${guests.length === 1 ? "" : "s"}` : "", e.durationMinutes ? `${e.durationMinutes} min` : ""].filter(Boolean).join(" · ");
@@ -186,7 +297,7 @@
             <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,240,234,.5);margin-top:3px">${escapeHTML(g.headline)}</div></div>
           </div>`).join("") : `<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,240,234,.5)">Guest details coming soon</div>`}
       </div>
-      ${e.watchUrl !== "#" ? `<a href="${escapeHTML(e.watchUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:12px;padding:17px 30px;background:#F2F0EA;color:#0C0B0A;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;text-decoration:none">Watch the episode →</a>` : ""}
+      ${e.videoUrl ? videoButton(e.videoUrl) : (e.watchUrl !== "#" ? `<a href="${escapeHTML(e.watchUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:12px;padding:17px 30px;background:#F2F0EA;color:#0C0B0A;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;text-decoration:none">Watch the episode →</a>` : "")}
     `;
   }
 
@@ -199,7 +310,7 @@
     }
 
     root.innerHTML = items.map(e => `
-      <a href="${escapeHTML(e.watchUrl)}" ${e.watchUrl !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}
+      <a href="${escapeHTML(e.videoUrl || e.watchUrl)}" ${!e.videoUrl && e.watchUrl !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}
          class="td-card td-episode-card" data-reveal="1"
          style="display:flex;align-items:center;gap:30px;padding:24px 28px;background:#0C0B0A;color:#F2F0EA;text-decoration:none;opacity:0;transform:translateY(22px)">
         ${e.stillImage
@@ -223,7 +334,7 @@
     }
 
     root.innerHTML = items.map(e => `
-      <a href="${escapeHTML(e.watchUrl)}" ${e.watchUrl !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}
+      <a href="${escapeHTML(e.videoUrl || e.watchUrl)}" ${!e.videoUrl && e.watchUrl !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}
          class="td-sess" data-reveal="1"
          style="display:grid;grid-template-columns:92px 1fr 230px 52px;gap:24px;align-items:center;padding:32px 10px;border-bottom:1px solid rgba(242,240,234,.18);text-decoration:none;opacity:0;transform:translateY(18px)">
         <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(242,240,234,.5)">№ ${escapeHTML(e.episodeNumber)}</span>
@@ -282,6 +393,18 @@
   }
 
   function initInteractions() {
+    ensureVideoModal();
+
+    document.addEventListener("click", event => {
+      const trigger = event.target.closest(".td-video-trigger, .td-watch-video");
+      if (!trigger) return;
+      event.preventDefault();
+      const url = trigger.getAttribute("data-video-url");
+      if (url && window.openEpisodeVideo) {
+        window.openEpisodeVideo(url);
+      }
+    });
+
     const hero = $("#top");
     const inner = hero?.querySelector('[data-parallax="1"]');
 
