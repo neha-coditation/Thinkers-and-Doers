@@ -205,10 +205,10 @@
 
     const data = await response.json();
 
-    return normalizeContentful(data);
+    return await normalizeContentful(data, CONFIG);
   }
 
-  function normalizeContentful(data) {
+  async function normalizeContentful(data, config) {
     const includedEntries =
       data?.includes?.Entry || [];
 
@@ -223,21 +223,51 @@
       includedAssets.map(asset => [asset.sys.id, asset])
     );
 
-    function resolveAsset(link) {
-      const assetId = link?.sys?.id;
+    const assetCache = new Map();
 
+    async function resolveAsset(link) {
+      if (!link) return "";
+
+      // Contentful can return a fully resolved asset in some responses.
+      const directUrl = link?.fields?.file?.url || link?.url;
+      if (directUrl) {
+        return directUrl.startsWith("//") ? "https:" + directUrl : directUrl;
+      }
+
+      const assetId = link?.sys?.id;
       if (!assetId) return "";
 
-      const asset = assets.get(assetId);
+      // First use the asset returned in `includes.Asset`.
+      let asset = assets.get(assetId);
 
-      const url =
-        asset?.fields?.file?.url || "";
+      // If Contentful did not include the asset, fetch that Asset directly.
+      if (!asset) {
+        if (assetCache.has(assetId)) {
+          asset = await assetCache.get(assetId);
+        } else {
+          const request = fetch(
+            `https://cdn.contentful.com/spaces/${encodeURIComponent(config.spaceId)}` +
+            `/environments/${encodeURIComponent(config.environment || "master")}` +
+            `/assets/${encodeURIComponent(assetId)}?access_token=${encodeURIComponent(config.deliveryToken)}`,
+            { cache: "no-store" }
+          ).then(async response => {
+            if (!response.ok) {
+              throw new Error(`Could not load Contentful asset ${assetId} (HTTP ${response.status})`);
+            }
+            return response.json();
+          });
+
+          assetCache.set(assetId, request);
+          asset = await request;
+        }
+      }
+
+      const file = asset?.fields?.file;
+      const url = file?.url || "";
 
       if (!url) return "";
 
-      return url.startsWith("//")
-        ? "https:" + url
-        : url;
+      return url.startsWith("//") ? "https:" + url : url;
     }
 
     function resolveGuest(link) {
@@ -275,7 +305,7 @@
       };
     }
 
-    const episodes = (data?.items || []).map(item => {
+    const episodes = await Promise.all((data?.items || []).map(async item => {
       const fields = item.fields || {};
 
       const guests = Array.isArray(fields.guests)
@@ -283,6 +313,9 @@
             .map(resolveGuest)
             .filter(Boolean)
         : [];
+
+      const episodeVideo = await resolveAsset(fields.episodeVideo);
+      const stillImage = await resolveAsset(fields.stillImage);
 
       return {
         id: item.sys.id,
@@ -299,11 +332,11 @@
         durationMinutes:
           fields.durationMinutes ?? null,
         watchUrl: fields.watchUrl || "#",
-        episodeVideo: resolveAsset(fields.episodeVideo),
-        stillImage: resolveAsset(fields.stillImage),
+        episodeVideo,
+        stillImage,
         guests
       };
-    });
+    }));
 
     return { episodes };
   }
@@ -422,7 +455,24 @@
           style="display:block;width:100%;height:100%;padding:0;border:0;background:#0C0B0A;position:relative;cursor:pointer;overflow:hidden"
         >
           ${image}
-          <span class="td-play">▶</span>
+          <span class="td-play" style="
+            position:absolute;
+            left:50%;
+            top:50%;
+            transform:translate(-50%,-50%);
+            width:88px;
+            height:88px;
+            border:1px solid rgba(242,240,234,.7);
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#F2F0EA;
+            background:rgba(12,11,10,.28);
+            font-size:25px;
+            line-height:1;
+            z-index:3;
+          ">▶</span>
           <span style="
             position:absolute;
             left:18px;
@@ -990,6 +1040,7 @@
             line-height:1;
           ">×</button>
           <video class="td-popup-video" controls playsinline preload="metadata" style="display:block;width:100%;max-height:82vh;background:#000;"></video>
+          <div class="td-video-error" style="display:none;padding:14px 16px;color:#f2f0ea;background:#1a1715;font-family:'IBM Plex Mono',monospace;font-size:11px;">This video could not be played. Please check that the MP4 asset is processed and published in Contentful.</div>
           <div style="display:flex;justify-content:flex-end;padding:12px 16px;">
             <button type="button" class="td-video-close-text" style="background:transparent;border:0;color:rgba(242,240,234,.7);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Close video</button>
           </div>
@@ -999,6 +1050,7 @@
 
     const modal = document.querySelector(".td-video-modal");
     const video = modal.querySelector(".td-popup-video");
+    const videoError = modal.querySelector(".td-video-error");
     const closeButtons = modal.querySelectorAll(".td-video-close, .td-video-close-text");
 
     function closeVideo() {
@@ -1006,6 +1058,7 @@
       try { video.currentTime = 0; } catch (_) {}
       video.removeAttribute("src");
       video.load();
+      videoError.style.display = "none";
       modal.style.display = "none";
       modal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
@@ -1013,6 +1066,7 @@
 
     function openVideo(url) {
       if (!url) return;
+      videoError.style.display = "none";
       video.src = url;
       video.load();
       modal.style.display = "flex";
@@ -1024,6 +1078,11 @@
         playPromise.catch(error => console.warn("Video autoplay was blocked:", error));
       }
     }
+
+    video.addEventListener("error", () => {
+      videoError.style.display = "block";
+      console.error("Contentful video failed to load:", video.currentSrc || video.src);
+    });
 
     closeButtons.forEach(button => button.addEventListener("click", closeVideo));
 
