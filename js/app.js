@@ -325,7 +325,7 @@
         ),
         format: fields.format || "Conversation",
         durationMinutes:
-          fields.durationMinutes ?? null,
+          fields.duration ?? null,
         watchUrl: fields.watchUrl || "#",
         episodeVideo,
         episodeThumbnail,
@@ -1268,26 +1268,19 @@ if (form) {
         episodes
           .filter(isUpcoming)
           .sort(sortByNumberAscending);
-
       const publicEpisodes =
-  episodes
-    .filter(isPublic)
-    .sort(sortByNumberDescending);
+        episodes
+          .filter(isPublic)
+          .sort(sortByNumberDescending);
 
-// Public episodes sorted newest first
-const publicEpisodes =
-  episodes
-    .filter(isPublic)
-    .sort(sortByNumberDescending);
+      // Latest episode = newest public episode
+      const latestEpisode =
+        publicEpisodes[0] || null;
 
-// Latest episode = newest public episode
-const latestEpisode =
-  publicEpisodes[0] || null;
-
-// All Episodes = remaining public episodes
-// (Latest episode is excluded)
-const archiveEpisodes =
-  publicEpisodes.slice(1);
+      // All Episodes = all other public episodes
+      // (Latest episode is excluded)
+      const archiveEpisodes =
+        publicEpisodes.slice(1);
       
       if (latestEpisode) {
         renderLatest(latestEpisode);
