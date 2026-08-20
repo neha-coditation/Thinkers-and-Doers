@@ -1,17 +1,20 @@
-# Thinkers & Doers — S3 + Contentful
+# Thinkers & Doers final video fix
 
-This package converts the uploaded bundled HTML into a normal static website suitable for Amazon S3. The visual design is retained, while Latest / Upcoming / Archive episodes are rendered from Contentful.
+Replace these files in GitHub:
+- js/app.js
+- js/contentful-config.js
+- content.json
 
-## Contentful
-Create `episode` and `guest` content types using `CONTENTFUL-FIELDS.md`. In `js/contentful-config.js`, set `spaceId`, `environment`, `deliveryToken`, and `enabled: true`. Use a read-only Content Delivery API token — never a Content Management API token.
+The new app:
+- matches the target Latest Episode layout
+- keeps the large left media panel + right content column
+- reads Episode.video as a Contentful Asset
+- opens the uploaded MP4 in a modal player
+- keeps Guest fields from your current Guest model
+- uses Contentful when enabled
+- falls back to content.json
 
-## S3
-Upload the entire folder to S3, preserving `index.html`, `css/`, `js/`, `assets/`, and `content.json`. For production, use CloudFront in front of S3.
-
-## Local test
-Run `python3 -m http.server 8000` in this folder and open `http://localhost:8000`.
-
-## Editing episodes
-After Contentful is connected, you do not edit episode HTML. Add/edit/publish Episode entries in Contentful. The page automatically puts them into Latest, Upcoming, or Archive based on the `status` field.
-
-The `content.json` file is a local fallback so the page also works before Contentful is configured.
+Important:
+- The Contentful `video` field must be a single Media/Asset reference.
+- The uploaded video asset must be published.
+- Rotate the exposed Contentful Delivery API token before production.
