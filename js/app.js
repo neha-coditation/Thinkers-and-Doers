@@ -179,9 +179,11 @@
 
     function close() {
       video.pause();
+      video.currentTime = 0;
       video.removeAttribute("src");
       video.load();
       modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
       document.body.classList.remove("td-video-open");
     }
 
@@ -196,12 +198,21 @@
     window.playEpisodeVideo = url => {
       if (!url) return;
 
+      // Reset any previously opened episode before loading the new one.
+      video.pause();
+      video.currentTime = 0;
+      video.removeAttribute("src");
+      video.load();
+
       video.src = url;
+      video.currentTime = 0;
       modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
       document.body.classList.add("td-video-open");
 
+      // Start playback after the user clicks the episode play button.
       video.play().catch(() => {
-        // Browser may require the user to press Play; controls remain visible.
+        // Controls remain visible if the browser delays playback.
       });
     };
   }
