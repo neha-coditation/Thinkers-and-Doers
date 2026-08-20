@@ -1199,7 +1199,7 @@ if (form) {
     }
   });
 }
-
+  }
 
   function showError(error) {
     console.error(
