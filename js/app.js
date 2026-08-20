@@ -963,14 +963,23 @@
               'button[type="submit"]'
             );
 
+          const inputs =
+            form.querySelectorAll(
+              "input, textarea"
+            );
+
           const nameInput =
-            form.querySelector('[name="name"]');
+            form.querySelector('[name="name"]') ||
+            inputs[0];
 
           const emailInput =
-            form.querySelector('[name="email"]');
+            form.querySelector('[name="email"]') ||
+            inputs[1];
 
           const questionInput =
-            form.querySelector('[name="question"]');
+            form.querySelector('[name="question"]') ||
+            form.querySelector("textarea") ||
+            inputs[2];
 
           const name =
             nameInput?.value.trim() || "";
@@ -987,25 +996,22 @@
           }
 
           const originalText =
-            button ? button.textContent : "Submit";
+            button
+              ? button.textContent
+              : "Submit";
 
           if (button) {
             button.disabled = true;
-            button.textContent = "SUBMITTING...";
+            button.textContent =
+              "Submitting...";
           }
 
           try {
-            /*
-             * Zapier Catch Hook
-             *
-             * Use URLSearchParams instead of a custom
-             * Content-Type header. This avoids browser
-             * CORS preflight problems with Zapier.
-             */
-            const response = await fetch(
+            await fetch(
               "https://hooks.zapier.com/hooks/catch/28194042/4t8prw4/",
               {
                 method: "POST",
+                mode: "no-cors",
                 body: new URLSearchParams({
                   name,
                   email,
@@ -1013,12 +1019,6 @@
                 })
               }
             );
-
-            if (!response.ok) {
-              throw new Error(
-                `Zapier returned HTTP ${response.status}`
-              );
-            }
 
             if (button) {
               button.textContent =
@@ -1029,13 +1029,14 @@
 
           } catch (error) {
             console.error(
-              "Zapier form submission error:",
+              "Zapier submission error:",
               error
             );
 
             if (button) {
               button.disabled = false;
-              button.textContent = originalText;
+              button.textContent =
+                originalText;
             }
 
             alert(
@@ -1045,6 +1046,7 @@
         }
       );
     }
+
   }
 
   function showError(error) {
