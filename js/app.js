@@ -546,16 +546,20 @@
         </div>
       `;
 
-    const meta = [
-      episode.format,
-      guests.length
-        ? `${guests.length} guest${guests.length === 1 ? "" : "s"}`
-        : "",
-      episode.durationMinutes
-        ? `${episode.durationMinutes} min`
-        : ""
-    ].filter(Boolean).join(" · ");
+    const formattedDate = episode.episodeDate
+  ? new Date(episode.episodeDate).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    })
+  : "";
 
+const meta = [
+  formattedDate,
+  episode.durationMinutes
+    ? `${episode.durationMinutes} min`
+    : ""
+].filter(Boolean).join(" · ");
     content.innerHTML = `
       <div style="
         display:flex;
