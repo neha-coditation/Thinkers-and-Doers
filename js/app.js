@@ -205,10 +205,10 @@
 
     const data = await response.json();
 
-    return await normalizeContentful(data, CONFIG);
+    return normalizeContentful(data);
   }
 
-  async function normalizeContentful(data, config) {
+  async function normalizeContentful(data) {
     const includedEntries =
       data?.includes?.Entry || [];
 
@@ -223,54 +223,47 @@
       includedAssets.map(asset => [asset.sys.id, asset])
     );
 
-    const assetCache = new Map();
-
-    async function resolveAsset(link) {
-      if (!link) return "";
-
-      // Contentful can return a fully resolved asset in some responses.
-      const directUrl = link?.fields?.file?.url || link?.url;
-      if (directUrl) {
-        return directUrl.startsWith("//") ? "https:" + directUrl : directUrl;
-      }
-
+    async function resolveAsset(link, allowDirectFetch = true) {
       const assetId = link?.sys?.id;
+
       if (!assetId) return "";
 
-      // First use the asset returned in `includes.Asset`.
-      let asset = assets.get(assetId);
+      const asset = assets.get(assetId);
+      const url = asset?.fields?.file?.url || "";
 
-      // If Contentful did not include the asset, fetch that Asset directly.
-      if (!asset) {
-        if (assetCache.has(assetId)) {
-          asset = await assetCache.get(assetId);
-        } else {
-          const request = fetch(
-            `https://cdn.contentful.com/spaces/${encodeURIComponent(config.spaceId)}` +
-            `/environments/${encodeURIComponent(config.environment || "master")}` +
-            `/assets/${encodeURIComponent(assetId)}?access_token=${encodeURIComponent(config.deliveryToken)}`,
-            { cache: "no-store" }
-          ).then(async response => {
-            if (!response.ok) {
-              throw new Error(`Could not load Contentful asset ${assetId} (HTTP ${response.status})`);
-            }
-            return response.json();
-          });
-
-          assetCache.set(assetId, request);
-          asset = await request;
-        }
+      if (url) {
+        return url.startsWith("//") ? "https:" + url : url;
       }
 
-      const file = asset?.fields?.file;
-      const url = file?.url || "";
+      // Contentful sometimes does not include the linked Asset in the
+      // `includes.Asset` array. Fetch that Asset directly when needed.
+      if (!allowDirectFetch) return "";
 
-      if (!url) return "";
+      try {
+        const assetEndpoint =
+          `https://cdn.contentful.com/spaces/${encodeURIComponent(CONFIG.spaceId)}` +
+          `/environments/${encodeURIComponent(CONFIG.environment || "master")}` +
+          `/assets/${encodeURIComponent(assetId)}?access_token=${encodeURIComponent(CONFIG.deliveryToken)}`;
 
-      return url.startsWith("//") ? "https:" + url : url;
+        const assetResponse = await fetch(assetEndpoint, { cache: "no-store" });
+        if (!assetResponse.ok) {
+          console.warn(`Could not fetch Contentful asset ${assetId}: HTTP ${assetResponse.status}`);
+          return "";
+        }
+
+        const directAsset = await assetResponse.json();
+        const directUrl = directAsset?.fields?.file?.url || "";
+
+        return directUrl
+          ? (directUrl.startsWith("//") ? "https:" + directUrl : directUrl)
+          : "";
+      } catch (error) {
+        console.warn("Could not resolve Contentful asset:", assetId, error);
+        return "";
+      }
     }
 
-    function resolveGuest(link) {
+    async function resolveGuest(link) {
       const guestId = link?.sys?.id;
       const guest = entries.get(guestId);
 
@@ -300,7 +293,7 @@
         name: fields.name || "",
         headline: fields.headline || "",
         bio: fields.bio || "",
-        headshot: resolveAsset(fields.headshot),
+        headshot: await resolveAsset(fields.headshot, true),
         socialLinks
       };
     }
@@ -309,13 +302,11 @@
       const fields = item.fields || {};
 
       const guests = Array.isArray(fields.guests)
-        ? fields.guests
-            .map(resolveGuest)
-            .filter(Boolean)
+        ? (await Promise.all(fields.guests.map(resolveGuest))).filter(Boolean)
         : [];
 
-      const episodeVideo = await resolveAsset(fields.episodeVideo);
-      const stillImage = await resolveAsset(fields.stillImage);
+      const episodeVideo = await resolveAsset(fields.episodeVideo, true);
+      const stillImage = await resolveAsset(fields.stillImage, true);
 
       return {
         id: item.sys.id,
@@ -445,6 +436,8 @@
     const watchUrl = episode.watchUrl || "#";
     const episodeVideo = episode.episodeVideo || "";
 
+    console.log("Latest episode video URL:", episodeVideo || "<missing>");
+
     media.innerHTML = episodeVideo
       ? `
         <button
@@ -460,16 +453,16 @@
             left:50%;
             top:50%;
             transform:translate(-50%,-50%);
-            width:88px;
-            height:88px;
-            border:1px solid rgba(242,240,234,.7);
+            width:86px;
+            height:86px;
+            border:1px solid rgba(242,240,234,.65);
             border-radius:50%;
             display:flex;
             align-items:center;
             justify-content:center;
             color:#F2F0EA;
             background:rgba(12,11,10,.28);
-            font-size:25px;
+            font-size:22px;
             line-height:1;
             z-index:3;
           ">▶</span>
@@ -1040,7 +1033,6 @@
             line-height:1;
           ">×</button>
           <video class="td-popup-video" controls playsinline preload="metadata" style="display:block;width:100%;max-height:82vh;background:#000;"></video>
-          <div class="td-video-error" style="display:none;padding:14px 16px;color:#f2f0ea;background:#1a1715;font-family:'IBM Plex Mono',monospace;font-size:11px;">This video could not be played. Please check that the MP4 asset is processed and published in Contentful.</div>
           <div style="display:flex;justify-content:flex-end;padding:12px 16px;">
             <button type="button" class="td-video-close-text" style="background:transparent;border:0;color:rgba(242,240,234,.7);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Close video</button>
           </div>
@@ -1050,7 +1042,6 @@
 
     const modal = document.querySelector(".td-video-modal");
     const video = modal.querySelector(".td-popup-video");
-    const videoError = modal.querySelector(".td-video-error");
     const closeButtons = modal.querySelectorAll(".td-video-close, .td-video-close-text");
 
     function closeVideo() {
@@ -1058,7 +1049,6 @@
       try { video.currentTime = 0; } catch (_) {}
       video.removeAttribute("src");
       video.load();
-      videoError.style.display = "none";
       modal.style.display = "none";
       modal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
@@ -1066,7 +1056,6 @@
 
     function openVideo(url) {
       if (!url) return;
-      videoError.style.display = "none";
       video.src = url;
       video.load();
       modal.style.display = "flex";
@@ -1078,11 +1067,6 @@
         playPromise.catch(error => console.warn("Video autoplay was blocked:", error));
       }
     }
-
-    video.addEventListener("error", () => {
-      videoError.style.display = "block";
-      console.error("Contentful video failed to load:", video.currentSrc || video.src);
-    });
 
     closeButtons.forEach(button => button.addEventListener("click", closeVideo));
 
