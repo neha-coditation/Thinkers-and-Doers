@@ -11,7 +11,7 @@
       "episodeNumber": 3,
       "format": "Panel",
       "durationMinutes": 58,
-      "video": "",
+      "watchUrl": "#",
       "stillImage": "",
       "guests": [
         {
@@ -20,7 +20,14 @@
           "headline": "Role, Company",
           "bio": "Guest bio will be added in Contentful.",
           "headshot": "",
-          "socialLinks": []
+          "socialLinks": [
+            {
+              "provider": [
+                "LinkedIn"
+              ],
+              "url": "#"
+            }
+          ]
         },
         {
           "id": "guest-002",
@@ -28,7 +35,14 @@
           "headline": "Role, Company",
           "bio": "Guest bio will be added in Contentful.",
           "headshot": "",
-          "socialLinks": []
+          "socialLinks": [
+            {
+              "provider": [
+                "X"
+              ],
+              "url": "#"
+            }
+          ]
         },
         {
           "id": "guest-003",
@@ -38,7 +52,8 @@
           "headshot": "",
           "socialLinks": []
         }
-      ]
+      ],
+      "episodeVideo": ""
     },
     {
       "id": "episode-004",
@@ -51,9 +66,27 @@
       "episodeNumber": 4,
       "format": "Conversation",
       "durationMinutes": null,
-      "video": "",
+      "watchUrl": "#",
       "stillImage": "",
-      "guests": []
+      "guests": [
+        {
+          "id": "guest-004",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        },
+        {
+          "id": "guest-005",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "episodeVideo": ""
     },
     {
       "id": "episode-005",
@@ -66,9 +99,93 @@
       "episodeNumber": 5,
       "format": "Working Session",
       "durationMinutes": null,
-      "video": "",
+      "watchUrl": "#",
       "stillImage": "",
-      "guests": []
+      "guests": [
+        {
+          "id": "guest-006",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        },
+        {
+          "id": "guest-007",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        },
+        {
+          "id": "guest-008",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "episodeVideo": ""
+    },
+    {
+      "id": "episode-002",
+      "name": "The work that looks easy from the outside.",
+      "description": "Details coming soon.",
+      "episodeDate": null,
+      "status": [
+        "public"
+      ],
+      "episodeNumber": 2,
+      "format": "Conversation",
+      "durationMinutes": 52,
+      "watchUrl": "#",
+      "stillImage": "",
+      "guests": [
+        {
+          "id": "guest-009",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "episodeVideo": ""
+    },
+    {
+      "id": "episode-001",
+      "name": "Who is accountable when the model is wrong?",
+      "description": "Details coming soon.",
+      "episodeDate": null,
+      "status": [
+        "public"
+      ],
+      "episodeNumber": 1,
+      "format": "Conversation",
+      "durationMinutes": 64,
+      "watchUrl": "#",
+      "stillImage": "",
+      "guests": [
+        {
+          "id": "guest-010",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        },
+        {
+          "id": "guest-011",
+          "name": "Guest Name",
+          "headline": "Role, Company",
+          "bio": "Guest bio will be added in Contentful.",
+          "headshot": "",
+          "socialLinks": []
+        }
+      ],
+      "episodeVideo": ""
     }
   ]
 }
