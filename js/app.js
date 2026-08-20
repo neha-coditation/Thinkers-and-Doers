@@ -8,7 +8,7 @@
    * Current Contentful models:
    * Episode:
    *   name, description, episodeDate, status[], episodeNumber,
-   *   episodeVideo, episodeDate, status[], guests[]
+   *   format, durationMinutes, watchUrl, stillImage, guests[]
    *
    * Guest:
    *   name, headline, bio, headshot, socialLinks[]
@@ -65,25 +65,6 @@
     return "";
   }
 
-  function getVideoUrl(video) {
-    if (!video) return "";
-
-    if (typeof video === "string") {
-      return video.startsWith("//") ? "https:" + video : video;
-    }
-
-    if (video.url) {
-      return video.url.startsWith("//") ? "https:" + video.url : video.url;
-    }
-
-    if (video.fields?.file?.url) {
-      const url = video.fields.file.url;
-      return url.startsWith("//") ? "https:" + url : url;
-    }
-
-    return "";
-  }
-
   function getSocialProvider(link) {
     if (!link) return "";
 
@@ -126,10 +107,6 @@
         episode?.duration ??
         null,
       watchUrl: episode?.watchUrl || "#",
-      episodeVideo: getVideoUrl(episode?.episodeVideo || episode?.video || ""),
-      episodeThumbnail: getImageUrl(
-        episode?.episodeThumbnail || episode?.thumbnail || ""
-      ),
       stillImage: getImageUrl(
         episode?.stillImage || episode?.image || ""
       ),
@@ -211,7 +188,7 @@
     return normalizeContentful(data);
   }
 
-  async function normalizeContentful(data) {
+  function normalizeContentful(data) {
     const includedEntries =
       data?.includes?.Entry || [];
 
@@ -226,47 +203,24 @@
       includedAssets.map(asset => [asset.sys.id, asset])
     );
 
-    async function resolveAsset(link, allowDirectFetch = true) {
+    function resolveAsset(link) {
       const assetId = link?.sys?.id;
 
       if (!assetId) return "";
 
       const asset = assets.get(assetId);
-      const url = asset?.fields?.file?.url || "";
 
-      if (url) {
-        return url.startsWith("//") ? "https:" + url : url;
-      }
+      const url =
+        asset?.fields?.file?.url || "";
 
-      // Contentful sometimes does not include the linked Asset in the
-      // `includes.Asset` array. Fetch that Asset directly when needed.
-      if (!allowDirectFetch) return "";
+      if (!url) return "";
 
-      try {
-        const assetEndpoint =
-          `https://cdn.contentful.com/spaces/${encodeURIComponent(CONFIG.spaceId)}` +
-          `/environments/${encodeURIComponent(CONFIG.environment || "master")}` +
-          `/assets/${encodeURIComponent(assetId)}?access_token=${encodeURIComponent(CONFIG.deliveryToken)}`;
-
-        const assetResponse = await fetch(assetEndpoint, { cache: "no-store" });
-        if (!assetResponse.ok) {
-          console.warn(`Could not fetch Contentful asset ${assetId}: HTTP ${assetResponse.status}`);
-          return "";
-        }
-
-        const directAsset = await assetResponse.json();
-        const directUrl = directAsset?.fields?.file?.url || "";
-
-        return directUrl
-          ? (directUrl.startsWith("//") ? "https:" + directUrl : directUrl)
-          : "";
-      } catch (error) {
-        console.warn("Could not resolve Contentful asset:", assetId, error);
-        return "";
-      }
+      return url.startsWith("//")
+        ? "https:" + url
+        : url;
     }
 
-    async function resolveGuest(link) {
+    function resolveGuest(link) {
       const guestId = link?.sys?.id;
       const guest = entries.get(guestId);
 
@@ -296,21 +250,19 @@
         name: fields.name || "",
         headline: fields.headline || "",
         bio: fields.bio || "",
-        headshot: await resolveAsset(fields.headshot, true),
+        headshot: resolveAsset(fields.headshot),
         socialLinks
       };
     }
 
-    const episodes = await Promise.all((data?.items || []).map(async item => {
+    const episodes = (data?.items || []).map(item => {
       const fields = item.fields || {};
 
       const guests = Array.isArray(fields.guests)
-        ? (await Promise.all(fields.guests.map(resolveGuest))).filter(Boolean)
+        ? fields.guests
+            .map(resolveGuest)
+            .filter(Boolean)
         : [];
-
-      const episodeVideo = await resolveAsset(fields.episodeVideo, true);
-      const episodeThumbnail = await resolveAsset(fields.episodeThumbnail, true);
-      const stillImage = await resolveAsset(fields.stillImage, true);
 
       return {
         id: item.sys.id,
@@ -327,12 +279,10 @@
         durationMinutes:
           fields.durationMinutes ?? null,
         watchUrl: fields.watchUrl || "#",
-        episodeVideo,
-        episodeThumbnail,
-        stillImage,
+        stillImage: resolveAsset(fields.stillImage),
         guests
       };
-    }));
+    });
 
     return { episodes };
   }
@@ -429,82 +379,41 @@
 
     if (!media || !content) return;
 
-    const thumbnailUrl = episode.episodeThumbnail || episode.stillImage || "";
-
-    const image = thumbnailUrl
+    const image = episode.stillImage
       ? `
         <img
-          src="${escapeHTML(thumbnailUrl)}"
+          src="${escapeHTML(episode.stillImage)}"
           alt="${escapeHTML(episode.name)}"
-          style="width:100%;height:100%;object-fit:cover;display:block;"
         >
       `
       : "";
 
     const watchUrl = episode.watchUrl || "#";
-    const episodeVideo = episode.episodeVideo || "";
 
-    console.log("Latest episode video URL:", episodeVideo || "<missing>");
+    media.innerHTML = `
+      <a
+        href="${escapeHTML(watchUrl)}"
+        ${watchUrl !== "#" ? 'target="_blank" rel="noopener noreferrer"' : ""}
+        style="display:block;height:100%;position:relative"
+      >
+        ${image}
 
-    media.innerHTML = episodeVideo
-      ? `
-        <button
-          type="button"
-          class="td-video-trigger"
-          data-video-url="${escapeHTML(episodeVideo)}"
-          aria-label="Play ${escapeHTML(episode.name)}"
-          style="display:block;width:100%;height:100%;padding:0;border:0;background:#0C0B0A;position:relative;cursor:pointer;overflow:hidden"
-        >
-          ${image}
-          <span class="td-play" style="
-            position:absolute;
-            left:50%;
-            top:50%;
-            transform:translate(-50%,-50%);
-            width:86px;
-            height:86px;
-            border:1px solid rgba(242,240,234,.65);
-            border-radius:50%;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#F2F0EA;
-            background:rgba(12,11,10,.28);
-            font-size:22px;
-            line-height:1;
-            z-index:3;
-          ">▶</span>
-          <span style="
-            position:absolute;
-            left:18px;
-            bottom:18px;
-            font-family:'IBM Plex Mono',monospace;
-            font-size:10px;
-            letter-spacing:.14em;
-            text-transform:uppercase;
-            color:rgba(242,240,234,.7);
-            background:#0C0B0A;
-            padding:6px 10px;
-          ">play episode</span>
-        </button>
-      `
-      : `
-        <div style="display:block;height:100%;position:relative">
-          ${image}
-          <span style="
-            position:absolute;
-            left:18px;
-            bottom:18px;
-            font-family:'IBM Plex Mono',monospace;
-            font-size:10px;
-            letter-spacing:.14em;
-            text-transform:uppercase;
-            color:rgba(242,240,234,.7);
-            background:#0C0B0A;
-            padding:6px 10px;
-          ">episode still</span>
-        </div>
-      `;
+        <span class="td-play">▶</span>
+
+        <span style="
+          position:absolute;
+          left:18px;
+          bottom:18px;
+          font-family:'IBM Plex Mono',monospace;
+          font-size:10px;
+          letter-spacing:.14em;
+          text-transform:uppercase;
+          color:rgba(242,240,234,.7);
+          background:#0C0B0A;
+          padding:6px 10px;
+        ">episode still</span>
+      </a>
+    `;
 
     const guests = episode.guests || [];
 
@@ -616,12 +525,12 @@
       </div>
 
       ${
-        episodeVideo
+        watchUrl !== "#"
           ? `
-            <button
-              type="button"
-              class="td-video-trigger"
-              data-video-url="${escapeHTML(episodeVideo)}"
+            <a
+              href="${escapeHTML(watchUrl)}"
+              target="_blank"
+              rel="noopener noreferrer"
               style="
                 display:inline-flex;
                 align-items:center;
@@ -634,8 +543,7 @@
                 letter-spacing:.1em;
                 text-transform:uppercase;
                 border-radius:999px;
-                border:0;
-                cursor:pointer;
+                text-decoration:none;
               "
             >
               Watch the episode
@@ -643,18 +551,9 @@
                 font-family:'IBM Plex Mono',monospace;
                 font-size:15px;
               ">→</span>
-            </button>
+            </a>
           `
-          : watchUrl !== "#"
-            ? `
-              <a
-                href="${escapeHTML(watchUrl)}"
-                target="_blank"
-                rel="noopener noreferrer"
-                style="display:inline-flex;align-items:center;gap:12px;padding:17px 30px;background:#F2F0EA;color:#0C0B0A;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;text-decoration:none;"
-              >Watch the episode <span style="font-family:'IBM Plex Mono',monospace;font-size:15px;">→</span></a>
-            `
-            : ""
+          : ""
       }
     `;
   }
@@ -1006,99 +905,7 @@
     });
   }
 
-  function ensureVideoModal() {
-    if (document.querySelector(".td-video-modal")) return;
-
-    document.body.insertAdjacentHTML("beforeend", `
-      <div class="td-video-modal" aria-hidden="true" style="
-        position:fixed;
-        inset:0;
-        z-index:999999;
-        display:none;
-        align-items:center;
-        justify-content:center;
-        padding:24px;
-        background:rgba(0,0,0,.94);
-      ">
-        <div class="td-video-modal-panel" role="dialog" aria-modal="true" aria-label="Episode video" style="
-          position:relative;
-          width:min(1200px,96vw);
-          background:#0C0B0A;
-          border:1px solid rgba(242,240,234,.2);
-          box-shadow:0 30px 100px rgba(0,0,0,.6);
-        ">
-          <button type="button" class="td-video-close" aria-label="Close video" style="
-            position:absolute;
-            top:-48px;
-            right:0;
-            width:40px;
-            height:40px;
-            border:1px solid rgba(242,240,234,.4);
-            background:#0C0B0A;
-            color:#F2F0EA;
-            cursor:pointer;
-            font-size:24px;
-            line-height:1;
-          ">×</button>
-          <video class="td-popup-video" controls playsinline preload="metadata" style="display:block;width:100%;max-height:82vh;background:#000;"></video>
-          <div style="display:flex;justify-content:flex-end;padding:12px 16px;">
-            <button type="button" class="td-video-close-text" style="background:transparent;border:0;color:rgba(242,240,234,.7);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Close video</button>
-          </div>
-        </div>
-      </div>
-    `);
-
-    const modal = document.querySelector(".td-video-modal");
-    const video = modal.querySelector(".td-popup-video");
-    const closeButtons = modal.querySelectorAll(".td-video-close, .td-video-close-text");
-
-    function closeVideo() {
-      video.pause();
-      try { video.currentTime = 0; } catch (_) {}
-      video.removeAttribute("src");
-      video.load();
-      modal.style.display = "none";
-      modal.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-
-    function openVideo(url) {
-      if (!url) return;
-      video.src = url;
-      video.load();
-      modal.style.display = "flex";
-      modal.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-
-      const playPromise = video.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(error => console.warn("Video autoplay was blocked:", error));
-      }
-    }
-
-    closeButtons.forEach(button => button.addEventListener("click", closeVideo));
-
-    modal.addEventListener("click", event => {
-      if (event.target === modal) closeVideo();
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape" && modal.style.display === "flex") {
-        closeVideo();
-      }
-    });
-
-    document.addEventListener("click", event => {
-      const trigger = event.target.closest(".td-video-trigger");
-      if (!trigger) return;
-      event.preventDefault();
-      openVideo(trigger.getAttribute("data-video-url"));
-    });
-  }
-
   function initInteractions() {
-    ensureVideoModal();
-
     const hero = $("#top");
 
     if (!hero) return;
@@ -1146,58 +953,97 @@
       $("#application-form");
 
     if (form) {
-      form.addEventListener("submit", async event => {
-        event.preventDefault();
+      form.addEventListener(
+        "submit",
+        async event => {
+          event.preventDefault();
 
-        const button = form.querySelector('button[type="submit"]');
-        const nameInput = form.querySelector('[name="name"]');
-        const emailInput = form.querySelector('[name="email"]');
-        const questionInput = form.querySelector('[name="question"]');
+          const button =
+            form.querySelector(
+              'button[type="submit"]'
+            );
 
-        const name = nameInput?.value.trim() || "";
-        const email = emailInput?.value.trim() || "";
-        const question = questionInput?.value.trim() || "";
+          const nameInput =
+            form.querySelector('[name="name"]');
 
-        if (!name || !email || !question) {
-          alert("Please fill in all fields.");
-          return;
-        }
+          const emailInput =
+            form.querySelector('[name="email"]');
 
-        const originalText = button ? button.textContent : "Submit";
+          const questionInput =
+            form.querySelector('[name="question"]');
 
-        if (button) {
-          button.disabled = true;
-          button.textContent = "Submitting...";
-        }
+          const name =
+            nameInput?.value.trim() || "";
 
-        try {
-          await fetch(
-            "https://script.google.com/a/macros/coditation.com/s/AKfycbwIlO528vi11EKMUoBmXn3Raj7HE90z_pxfU5MU_vn6Luqw-zzJexNC4C6dZD9RSZBYmA/exec",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "text/plain;charset=utf-8"
-              },
-              body: JSON.stringify({ name, email, question })
+          const email =
+            emailInput?.value.trim() || "";
+
+          const question =
+            questionInput?.value.trim() || "";
+
+          if (!name || !email || !question) {
+            alert("Please fill in all fields.");
+            return;
+          }
+
+          const originalText =
+            button ? button.textContent : "Submit";
+
+          if (button) {
+            button.disabled = true;
+            button.textContent = "SUBMITTING...";
+          }
+
+          try {
+            /*
+             * Zapier Catch Hook
+             *
+             * Use URLSearchParams instead of a custom
+             * Content-Type header. This avoids browser
+             * CORS preflight problems with Zapier.
+             */
+            const response = await fetch(
+              "https://hooks.zapier.com/hooks/catch/28194042/4t8prw4/",
+              {
+                method: "POST",
+                body: new URLSearchParams({
+                  name,
+                  email,
+                  question
+                })
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error(
+                `Zapier returned HTTP ${response.status}`
+              );
             }
-          );
 
-          if (button) {
-            button.textContent = "Received — we'll be in touch";
+            if (button) {
+              button.textContent =
+                "Received — we'll be in touch";
+            }
+
+            form.reset();
+
+          } catch (error) {
+            console.error(
+              "Zapier form submission error:",
+              error
+            );
+
+            if (button) {
+              button.disabled = false;
+              button.textContent = originalText;
+            }
+
+            alert(
+              "Something went wrong. Please try again."
+            );
           }
-
-          form.reset();
-        } catch (error) {
-          console.error("Empty Chair form submission error:", error);
-
-          if (button) {
-            button.disabled = false;
-            button.textContent = originalText;
-          }
-
-          alert("Something went wrong. Please try again.");
         }
-      });
+      );
     }
   }
 
