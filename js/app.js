@@ -793,24 +793,106 @@ const meta = [
     }).join("");
   }
 
-  function renderArchive(episodes) {
-    const root = $("#archive-list");
+ function renderArchive(episodes) {
+  const root = $("#archive-list");
 
-    if (!root) return;
+  if (!root) return;
 
-    if (!episodes.length) {
-      root.innerHTML = `
-        <div class="td-empty">
-          No archived episodes yet.
-        </div>
+  if (!episodes.length) {
+    root.innerHTML = `
+      <div class="td-empty">
+        No archived episodes yet.
+      </div>
+    `;
+    return;
+  }
+
+  root.innerHTML = episodes.map(episode => {
+    const episodeVideo = episode.episodeVideo || "";
+    const watchUrl = episode.watchUrl || "#";
+
+    const formattedDate = episode.episodeDate
+      ? new Date(episode.episodeDate).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        })
+      : "";
+
+    const meta = [
+      formattedDate,
+      episode.durationMinutes
+        ? `${episode.durationMinutes} min`
+        : ""
+    ].filter(Boolean).join(" · ");
+
+    // If video exists, clicking opens the video popup.
+    // If no video exists, fall back to the watch URL.
+    if (episodeVideo) {
+      return `
+        <button
+          type="button"
+          class="td-sess td-video-trigger"
+          data-video-url="${escapeHTML(episodeVideo)}"
+          style="
+            width:100%;
+            display:grid;
+            grid-template-columns:92px 1fr 230px 52px;
+            gap:24px;
+            align-items:center;
+            padding:32px 10px;
+            border:0;
+            border-bottom:1px solid rgba(242,240,234,.18);
+            background:transparent;
+            color:#F2F0EA;
+            text-align:left;
+            cursor:pointer;
+            opacity:0;
+            transform:translateY(18px);
+          "
+        >
+          <span style="
+            font-family:'IBM Plex Mono',monospace;
+            font-size:12px;
+            color:rgba(242,240,234,.5);
+            letter-spacing:.1em;
+          ">
+            № ${escapeHTML(episode.episodeNumber)}
+          </span>
+
+          <span style="
+            font-size:clamp(19px,2vw,26px);
+            font-weight:700;
+            letter-spacing:-.025em;
+          ">
+            ${escapeHTML(episode.name)}
+          </span>
+
+          <span
+            class="td-sessmeta"
+            style="
+              font-family:'IBM Plex Mono',monospace;
+              font-size:12px;
+              color:rgba(242,240,234,.5);
+            "
+          >
+            ${escapeHTML(meta)}
+          </span>
+
+          <span style="
+            font-family:'IBM Plex Mono',monospace;
+            font-size:18px;
+            text-align:right;
+          ">→</span>
+        </button>
       `;
-      return;
     }
 
-    root.innerHTML = episodes.map(episode => `
+    // Fallback if the episode has no video asset
+    return `
       <a
-        href="${escapeHTML(episode.watchUrl || "#")}"
-        ${episode.watchUrl && episode.watchUrl !== "#"
+        href="${escapeHTML(watchUrl)}"
+        ${watchUrl !== "#"
           ? 'target="_blank" rel="noopener noreferrer"'
           : ""
         }
@@ -824,6 +906,7 @@ const meta = [
           padding:32px 10px;
           border-bottom:1px solid rgba(242,240,234,.18);
           text-decoration:none;
+          color:#F2F0EA;
           opacity:0;
           transform:translateY(18px);
         "
@@ -853,12 +936,7 @@ const meta = [
             color:rgba(242,240,234,.5);
           "
         >
-          ${escapeHTML(episode.format)}
-          · ${episode.guests?.length || 0} guests
-          ${episode.durationMinutes
-            ? ` · ${escapeHTML(episode.durationMinutes)} min`
-            : ""
-          }
+          ${escapeHTML(meta)}
         </span>
 
         <span style="
@@ -867,8 +945,12 @@ const meta = [
           text-align:right;
         ">→</span>
       </a>
-    `).join("");
-  }
+    `;
+  }).join("");
+
+  // Animate the newly-created archive rows
+  reveal();
+}
 
   function renderGuests(episodes) {
     const root = $("#guest-grid");
