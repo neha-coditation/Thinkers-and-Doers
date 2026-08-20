@@ -682,20 +682,58 @@
 <p style="font-size: 19px; line-height: 1.6; color: rgba(12,11,10,0.72); margin: 0 0 30px; max-width: 40ch; text-wrap: pretty;">Tell us the question you would put to the room, and what you have built or studied that gives you a side in it. Every application gets read by a person.</p>
 <p style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: rgba(12,11,10,0.55); margin: 0; line-height: 1.9;">No fixed schedule yet.<br/>Sessions run when the question is worth the room.</p>
 </div>
-<form data-reveal="1" id="application-form" style="display: flex; flex-direction: column; gap: 22px; opacity: 0; transform: translateY(24px); transition: opacity 800ms cubic-bezier(.2,.8,.2,1) 120ms, transform 800ms cubic-bezier(.2,.8,.2,1) 120ms;">
-<label style="display: flex; flex-direction: column; gap: 9px;">
-<span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">Name</span>
-<input placeholder="Your name" style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; transition: border-color 300ms ease;" type="text"/>
-</label>
-<label style="display: flex; flex-direction: column; gap: 9px;">
-<span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">Email</span>
-<input placeholder="you@company.com" style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; transition: border-color 300ms ease;" type="email"/>
-</label>
-<label style="display: flex; flex-direction: column; gap: 9px;">
-<span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">The question you would bring</span>
-<textarea placeholder="One sentence is enough." rows="3" style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; resize: vertical; transition: border-color 300ms ease;"></textarea>
-</label>
-<button style="margin-top: 12px; align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; padding: 19px 36px; background: #0C0B0A; color: #F2F0EA; font-family: Archivo, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: none; border-radius: 999px; cursor: pointer; transition: transform 300ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms ease;" type="submit">Send application</button>
+<form data-reveal="1" id="application-form"
+  style="display: flex; flex-direction: column; gap: 22px; opacity: 1; transform: translateY(0px); transition: opacity 800ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 800ms cubic-bezier(0.2, 0.8, 0.2, 1);">
+
+  <label style="display: flex; flex-direction: column; gap: 9px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">
+      Name
+    </span>
+
+    <input
+      type="text"
+      name="name"
+      placeholder="Your name"
+      required
+      style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; transition: border-color 300ms ease;"
+    >
+  </label>
+
+  <label style="display: flex; flex-direction: column; gap: 9px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">
+      Email
+    </span>
+
+    <input
+      type="email"
+      name="email"
+      placeholder="you@company.com"
+      required
+      style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; transition: border-color 300ms ease;"
+    >
+  </label>
+
+  <label style="display: flex; flex-direction: column; gap: 9px;">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(12,11,10,0.55);">
+      The question you would bring
+    </span>
+
+    <textarea
+      name="question"
+      placeholder="One sentence is enough."
+      rows="3"
+      required
+      style="font-family: Archivo, sans-serif; font-size: 17px; padding: 14px 2px; border: none; border-bottom: 1px solid rgba(12,11,10,0.28); background: transparent; color: #0C0B0A; outline: none; resize: vertical; transition: border-color 300ms ease;"
+    ></textarea>
+  </label>
+
+  <button
+    style="margin-top: 12px; align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; padding: 19px 36px; background: #0C0B0A; color: #F2F0EA; font-family: Archivo, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border: none; border-radius: 999px; cursor: pointer; transition: transform 300ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms ease;"
+    type="submit"
+  >
+    Send application
+  </button>
+
 </form>
 </div>
 </div>
