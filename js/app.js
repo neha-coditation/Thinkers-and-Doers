@@ -1142,7 +1142,7 @@
 
     onScroll();
 
-    const form = $("#application-form");
+const form = $("#application-form");
 
 if (form) {
   form.addEventListener("submit", async event => {
@@ -1158,24 +1158,32 @@ if (form) {
     const formData = new FormData(form);
 
     const payload = {
+      access_key: "01096a2d-214c-41a8-8039-4518b2483731",
+      subject: "New Thinkers & Doers Application",
       name: formData.get("name") || "",
       email: formData.get("email") || "",
-      question: formData.get("question") || "",
+      message: formData.get("question") || "",
       submitted_at: new Date().toISOString(),
       source: "Thinkers & Doers"
     };
 
     try {
       const response = await fetch(
-  "https://hooks.zapier.com/hooks/catch/28194042/4t8prw4/",
-  {
-    method: "POST",
-    body: JSON.stringify(payload)
-  }
-);
+        "https://api.web3forms.com/submit",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(payload)
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(`Webhook failed: ${response.status}`);
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Form submission failed");
       }
 
       if (button) {
