@@ -1274,19 +1274,21 @@ if (form) {
     .filter(isPublic)
     .sort(sortByNumberDescending);
 
-// Old + public episodes should appear in All Episodes
-const archiveEpisodes =
+// Public episodes sorted newest first
+const publicEpisodes =
   episodes
-    .filter(episode => {
-      const status = getStatus(episode);
-      return status === "public" || status === "old";
-    })
+    .filter(isPublic)
     .sort(sortByNumberDescending);
 
 // Latest episode = newest public episode
 const latestEpisode =
   publicEpisodes[0] || null;
 
+// All Episodes = remaining public episodes
+// (Latest episode is excluded)
+const archiveEpisodes =
+  publicEpisodes.slice(1);
+      
       if (latestEpisode) {
         renderLatest(latestEpisode);
       } else {
