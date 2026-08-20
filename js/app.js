@@ -1167,15 +1167,12 @@ if (form) {
 
     try {
       const response = await fetch(
-        "https://hooks.zapier.com/hooks/catch/28194042/4t8prw4/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+  "https://hooks.zapier.com/hooks/catch/28194042/4t8prw4/",
+  {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }
+);
 
       if (!response.ok) {
         throw new Error(`Webhook failed: ${response.status}`);
