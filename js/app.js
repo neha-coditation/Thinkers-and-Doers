@@ -127,9 +127,6 @@
         null,
       watchUrl: episode?.watchUrl || "#",
       episodeVideo: getVideoUrl(episode?.episodeVideo || episode?.video || ""),
-      episodeThumbnail: getImageUrl(
-        episode?.episodeThumbnail || episode?.thumbnail || ""
-      ),
       stillImage: getImageUrl(
         episode?.stillImage || episode?.image || ""
       ),
@@ -309,7 +306,6 @@
         : [];
 
       const episodeVideo = await resolveAsset(fields.episodeVideo, true);
-      const episodeThumbnail = await resolveAsset(fields.episodeThumbnail, true);
       const stillImage = await resolveAsset(fields.stillImage, true);
 
       return {
@@ -328,7 +324,6 @@
           fields.durationMinutes ?? null,
         watchUrl: fields.watchUrl || "#",
         episodeVideo,
-        episodeThumbnail,
         stillImage,
         guests
       };
@@ -429,14 +424,11 @@
 
     if (!media || !content) return;
 
-    const thumbnailUrl = episode.episodeThumbnail || episode.stillImage || "";
-
-    const image = thumbnailUrl
+    const image = episode.stillImage
       ? `
         <img
-          src="${escapeHTML(thumbnailUrl)}"
+          src="${escapeHTML(episode.stillImage)}"
           alt="${escapeHTML(episode.name)}"
-          style="width:100%;height:100%;object-fit:cover;display:block;"
         >
       `
       : "";
@@ -1146,24 +1138,69 @@
       $("#application-form");
 
     if (form) {
-      form.addEventListener(
-        "submit",
-        event => {
-          event.preventDefault();
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
 
-          const button =
-            form.querySelector(
-              'button[type="submit"]'
-            );
+        const button = form.querySelector('button[type="submit"]');
+        const nameInput = form.querySelector('[name="name"]');
+        const emailInput = form.querySelector('[name="email"]');
+        const questionInput = form.querySelector('[name="question"]');
+
+        const name = nameInput?.value.trim() || "";
+        const email = emailInput?.value.trim() || "";
+        const question = questionInput?.value.trim() || "";
+
+        if (!name || !email || !question) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        const originalText = button ? button.textContent : "Submit";
+
+        if (button) {
+          button.disabled = true;
+          button.textContent = "Submitting...";
+        }
+
+        try {
+          const response = await fetch(
+            "https://script.google.com/a/macros/coditation.com/s/AKfycbwIlO528vi11EKMUoBmXn3Raj7HE90z_pxfU5MU_vn6Luqw-zzJexNC4C6dZD9RSZBYmA/exec",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+              },
+              body: JSON.stringify({
+                name,
+                email,
+                question
+              })
+            }
+          );
+
+          const result = await response.json();
+
+          if (!result.success) {
+            throw new Error(result.message || "Submission failed.");
+          }
 
           if (button) {
-            button.textContent =
-              "Received — we'll be in touch";
+            button.textContent = "Received — we'll be in touch";
           }
 
           form.reset();
+
+        } catch (error) {
+          console.error("Empty Chair form submission error:", error);
+
+          if (button) {
+            button.disabled = false;
+            button.textContent = originalText;
+          }
+
+          alert("Something went wrong. Please try again.");
         }
-      );
+      });
     }
   }
 
