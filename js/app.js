@@ -127,6 +127,9 @@
         null,
       watchUrl: episode?.watchUrl || "#",
       episodeVideo: getVideoUrl(episode?.episodeVideo || episode?.video || ""),
+      episodeThumbnail: getImageUrl(
+        episode?.episodeThumbnail || episode?.thumbnail || ""
+      ),
       stillImage: getImageUrl(
         episode?.stillImage || episode?.image || ""
       ),
@@ -306,6 +309,7 @@
         : [];
 
       const episodeVideo = await resolveAsset(fields.episodeVideo, true);
+      const episodeThumbnail = await resolveAsset(fields.episodeThumbnail, true);
       const stillImage = await resolveAsset(fields.stillImage, true);
 
       return {
@@ -324,6 +328,7 @@
           fields.durationMinutes ?? null,
         watchUrl: fields.watchUrl || "#",
         episodeVideo,
+        episodeThumbnail,
         stillImage,
         guests
       };
@@ -424,11 +429,14 @@
 
     if (!media || !content) return;
 
-    const image = episode.stillImage
+    const thumbnailUrl = episode.episodeThumbnail || episode.stillImage || "";
+
+    const image = thumbnailUrl
       ? `
         <img
-          src="${escapeHTML(episode.stillImage)}"
+          src="${escapeHTML(thumbnailUrl)}"
           alt="${escapeHTML(episode.name)}"
+          style="width:100%;height:100%;object-fit:cover;display:block;"
         >
       `
       : "";
