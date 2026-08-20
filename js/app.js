@@ -1142,23 +1142,64 @@
 
     onScroll();
 
-    const form =
-      $("#application-form");
+    const form = $("#application-form");
 
-    if (form) {
-      form.addEventListener("submit", event => {
-        event.preventDefault();
+if (form) {
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
 
-        const button = form.querySelector('button[type="submit"]');
+    const button = form.querySelector('button[type="submit"]');
 
-        if (button) {
-          button.textContent = "Received — we'll be in touch";
-        }
-
-        form.reset();
-      });
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Sending...";
     }
-  }
+
+    const formData = new FormData(form);
+
+    const payload = {
+      name: formData.get("name") || "",
+      email: formData.get("email") || "",
+      question: formData.get("question") || "",
+      submitted_at: new Date().toISOString(),
+      source: "Thinkers & Doers"
+    };
+
+    try {
+      const response = await fetch(
+        "https://hooks.zapier.com/hooks/catch/28194042/4t8prw4/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Webhook failed: ${response.status}`);
+      }
+
+      if (button) {
+        button.textContent = "Received — we'll be in touch";
+      }
+
+      form.reset();
+
+    } catch (error) {
+      console.error("Form submission error:", error);
+
+      if (button) {
+        button.disabled = false;
+        button.textContent = "Try again";
+      }
+
+      alert("Something went wrong. Please try again.");
+    }
+  });
+}
+
 
   function showError(error) {
     console.error(
