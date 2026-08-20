@@ -663,135 +663,222 @@ const meta = [
     `;
   }
 
-  function renderUpcoming(episodes) {
-    const root = $("#upcoming-list");
+function renderUpcoming(episodes) {
+  const root = $("#upcoming-list");
 
-    if (!root) return;
+  if (!root) return;
 
-    if (!episodes.length) {
-      root.innerHTML = `
-        <div class="td-empty">
-          No upcoming episodes yet. Add one in Contentful.
-        </div>
-      `;
-      return;
-    }
+  if (!episodes.length) {
+    root.innerHTML = `
+      <div class="td-empty">
+        No upcoming episodes yet. Add one in Contentful.
+      </div>
+    `;
+    return;
+  }
 
-    root.innerHTML = episodes.map(episode => {
-      const image = episode.stillImage
-        ? `
-          <img
-            src="${escapeHTML(episode.stillImage)}"
-            alt="${escapeHTML(episode.name)}"
-            loading="lazy"
-          >
-        `
-        : `
-          <div style="
-            flex:0 0 176px;
-            width:176px;
-            aspect-ratio:16/10;
-            border:1px solid rgba(242,240,234,.22);
-            background:repeating-linear-gradient(
-              135deg,
-              rgba(242,240,234,.16) 0 2px,
-              transparent 2px 11px
-            );
-            display:flex;
-            align-items:center;
-            justify-content:center;
-          ">
-            <span style="
-              font-family:'IBM Plex Mono',monospace;
-              font-size:9px;
-              letter-spacing:.14em;
-              text-transform:uppercase;
-              color:rgba(242,240,234,.55);
-            ">episode still</span>
-          </div>
-        `;
+  root.innerHTML = episodes.map((episode, index) => {
+    const isNextUp = index === 0;
 
-      const guestCount = episode.guests?.length || 0;
+    // Use the Contentful Episode Thumbnail first.
+    // Fall back to stillImage only if thumbnail is unavailable.
+    const thumbnail =
+      episode.episodeThumbnail ||
+      episode.stillImage ||
+      "";
 
-      return `
-        <a
-          href="${escapeHTML(episode.watchUrl || "#")}"
-          ${episode.watchUrl && episode.watchUrl !== "#"
-            ? 'target="_blank" rel="noopener noreferrer"'
-            : ""
-          }
-          class="td-card td-episode-card"
-          data-reveal="1"
+    const image = thumbnail
+      ? `
+        <img
+          src="${escapeHTML(thumbnail)}"
+          alt="${escapeHTML(episode.name)}"
+          loading="lazy"
           style="
-            display:flex;
-            align-items:center;
-            gap:30px;
-            padding:24px 28px;
-            background:#0C0B0A;
-            color:#F2F0EA;
-            text-decoration:none;
-            opacity:0;
-            transform:translateY(22px);
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            display:block;
           "
         >
-          ${image}
-
-          <div style="min-width:108px">
-            <div style="
-              font-family:'IBM Plex Mono',monospace;
-              font-size:11px;
-              letter-spacing:.16em;
-              text-transform:uppercase;
-              color:rgba(242,240,234,.55);
-              margin-bottom:8px;
-            ">Next up</div>
-
-            <div style="
-              font-family:Archivo,sans-serif;
-              font-weight:800;
-              font-size:32px;
-              line-height:1;
-            ">
-              № ${escapeHTML(episode.episodeNumber)}
-            </div>
-          </div>
-
-          <div style="flex:1;min-width:0">
-            <div style="
-              font-family:'IBM Plex Mono',monospace;
-              font-size:11px;
-              letter-spacing:.14em;
-              text-transform:uppercase;
-              color:rgba(242,240,234,.55);
-              margin-bottom:10px;
-            ">
-              ${escapeHTML(episode.format)}
-              · ${guestCount} guest${guestCount === 1 ? "" : "s"}
-            </div>
-
-            <div style="
-              font-size:clamp(20px,2vw,27px);
-              font-weight:700;
-              letter-spacing:-.025em;
-              line-height:1.2;
-            ">
-              ${escapeHTML(episode.name)}
-            </div>
-
-            <div style="
-              font-family:'IBM Plex Mono',monospace;
-              font-size:11px;
-              letter-spacing:.08em;
-              color:rgba(242,240,234,.55);
-              margin-top:12px;
-            ">
-              ${escapeHTML(episode.description || "Details coming soon.")}
-            </div>
-          </div>
-        </a>
+      `
+      : `
+        <div style="
+          width:100%;
+          height:100%;
+          background:repeating-linear-gradient(
+            135deg,
+            rgba(242,240,234,.16) 0 2px,
+            transparent 2px 11px
+          );
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        ">
+          <span style="
+            font-family:'IBM Plex Mono',monospace;
+            font-size:9px;
+            letter-spacing:.14em;
+            text-transform:uppercase;
+            color:rgba(242,240,234,.55);
+          ">
+            episode thumbnail
+          </span>
+        </div>
       `;
-    }).join("");
-  }
+
+    const guestCount = episode.guests?.length || 0;
+
+    const episodeLabel = isNextUp
+      ? "Next up"
+      : `Episode ${String(episode.episodeNumber || "").padStart(3, "0")}`;
+
+    return `
+      <a
+        href="${escapeHTML(episode.watchUrl || "#")}"
+        ${episode.watchUrl && episode.watchUrl !== "#"
+          ? 'target="_blank" rel="noopener noreferrer"'
+          : ""
+        }
+        class="td-card td-episode-card"
+        data-reveal="1"
+        style="
+          display:flex;
+          align-items:center;
+          gap:30px;
+          padding:28px 32px;
+          background:${isNextUp ? "#0C0B0A" : "#F2F0EA"};
+          color:${isNextUp ? "#F2F0EA" : "#0C0B0A"};
+          border:1px solid ${
+            isNextUp
+              ? "rgba(12,11,10,.08)"
+              : "rgba(12,11,10,.20)"
+          };
+          text-decoration:none;
+          opacity:0;
+          transform:translateY(22px);
+        "
+      >
+
+        <!-- Episode thumbnail -->
+        <div style="
+          flex:0 0 210px;
+          width:210px;
+          height:132px;
+          overflow:hidden;
+          border:1px solid ${
+            isNextUp
+              ? "rgba(242,240,234,.25)"
+              : "rgba(12,11,10,.22)"
+          };
+          background:${isNextUp ? "#171513" : "#EAE8E2"};
+        ">
+          ${image}
+        </div>
+
+        <!-- Episode number -->
+        <div style="
+          flex:0 0 135px;
+          min-width:135px;
+        ">
+          <div style="
+            font-family:'IBM Plex Mono',monospace;
+            font-size:11px;
+            letter-spacing:.16em;
+            text-transform:uppercase;
+            color:${
+              isNextUp
+                ? "rgba(242,240,234,.55)"
+                : "rgba(12,11,10,.55)"
+            };
+            margin-bottom:10px;
+          ">
+            ${escapeHTML(episodeLabel)}
+          </div>
+
+          ${
+            isNextUp
+              ? `
+                <div style="
+                  font-family:Archivo,sans-serif;
+                  font-weight:800;
+                  font-size:32px;
+                  line-height:1;
+                ">
+                  TBA
+                </div>
+              `
+              : `
+                <div style="
+                  font-family:Archivo,sans-serif;
+                  font-weight:800;
+                  font-size:32px;
+                  line-height:1;
+                ">
+                  TBA
+                </div>
+              `
+          }
+        </div>
+
+        <!-- Episode information -->
+        <div style="
+          flex:1;
+          min-width:0;
+        ">
+
+          <div style="
+            font-family:'IBM Plex Mono',monospace;
+            font-size:11px;
+            letter-spacing:.14em;
+            text-transform:uppercase;
+            color:${
+              isNextUp
+                ? "rgba(242,240,234,.55)"
+                : "rgba(12,11,10,.55)"
+            };
+            margin-bottom:12px;
+          ">
+            ${escapeHTML(episode.format || "Conversation")}
+            ·
+            ${guestCount}
+            guest${guestCount === 1 ? "" : "s"}
+          </div>
+
+          <div style="
+            font-size:clamp(20px,2vw,27px);
+            font-weight:700;
+            letter-spacing:-.025em;
+            line-height:1.2;
+          ">
+            ${escapeHTML(episode.name)}
+          </div>
+
+          <div style="
+            font-family:'IBM Plex Mono',monospace;
+            font-size:11px;
+            letter-spacing:.08em;
+            color:${
+              isNextUp
+                ? "rgba(242,240,234,.55)"
+                : "rgba(12,11,10,.55)"
+            };
+            margin-top:14px;
+          ">
+            ${escapeHTML(
+              episode.description || "Details coming soon."
+            )}
+          </div>
+
+        </div>
+
+      </a>
+    `;
+  }).join("");
+
+  reveal();
+}
+
+  
   function renderArchive(episodes) {
     const root = $("#archive-list");
 
