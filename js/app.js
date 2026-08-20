@@ -1,440 +1,1231 @@
 (() => {
   "use strict";
 
-  const CONFIG = window.CONTENTFUL_CONFIG || {};
-  const CONTENT_URL = "content.json";
+  /*
+   * Thinkers & Doers
+   * Contentful-compatible + content.json fallback
+   *
+   * Current Contentful models:
+   * Episode:
+   *   name, description, episodeDate, status[], episodeNumber,
+   *   episodeVideo, episodeDate, status[], guests[]
+   *
+   * Guest:
+   *   name, headline, bio, headshot, socialLinks[]
+   *
+   * SocialLink:
+   *   provider[], url
+   */
 
-  const E = value => String(value ?? "").replace(/[&<>"']/g, x => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[x]));
-
-  const assetUrl = asset => {
-    const url = asset?.fields?.file?.url || asset?.url || "";
-    if (!url) return "";
-    return url.startsWith("//") ? "https:" + url : url;
+  const CONFIG = window.CONTENTFUL_CONFIG || {
+    spaceId: "",
+    environment: "master",
+    deliveryToken: "",
+    contentType: "episode",
+    enabled: false
   };
 
-  const statusValue = value =>
-    Array.isArray(value) ? (value[0] || "") : (value || "");
+  const CONTENT_URL = "content.json";
 
-  function normalizeGuest(g, assets, entries) {
-    if (!g) return null;
+  const $ = (selector, root = document) => root.querySelector(selector);
 
-    const f = g.fields || g;
-    const socialLinks = (f.socialLinks || []).map(link => {
-      const s = entries?.[link?.sys?.id];
-      if (!s) return null;
-      const sf = s.fields || {};
-      const provider = Array.isArray(sf.provider) ? sf.provider[0] : sf.provider;
-      return { provider: provider || "", url: sf.url || "#" };
-    }).filter(Boolean);
+  const escapeHTML = (value = "") =>
+    String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[char]));
+
+  function getStatus(episode) {
+    const status = episode?.status;
+
+    if (Array.isArray(status)) {
+      return status[0] || "";
+    }
+
+    return status || "";
+  }
+
+  function getImageUrl(image) {
+    if (!image) return "";
+
+    // Local content.json image path
+    if (typeof image === "string") {
+      if (image.startsWith("//")) return "https:" + image;
+      return image;
+    }
+
+    // Contentful linked asset after normalization
+    if (image.url) {
+      return image.url.startsWith("//") ? "https:" + image.url : image.url;
+    }
+
+    return "";
+  }
+
+  function getVideoUrl(video) {
+    if (!video) return "";
+
+    if (typeof video === "string") {
+      return video.startsWith("//") ? "https:" + video : video;
+    }
+
+    if (video.url) {
+      return video.url.startsWith("//") ? "https:" + video.url : video.url;
+    }
+
+    if (video.fields?.file?.url) {
+      const url = video.fields.file.url;
+      return url.startsWith("//") ? "https:" + url : url;
+    }
+
+    return "";
+  }
+
+  function getSocialProvider(link) {
+    if (!link) return "";
+
+    if (Array.isArray(link.provider)) {
+      return link.provider[0] || "";
+    }
+
+    return link.provider || "";
+  }
+
+  function normalizeFallback(data) {
+    const episodes = Array.isArray(data?.episodes) ? data.episodes : [];
 
     return {
-      id: g.sys?.id || g.id || "",
-      name: f.name || "",
-      headline: f.headline || f.role || "",
-      bio: f.bio || "",
-      headshot: assetUrl(
-        assets?.[f.headshot?.sys?.id] || f.headshot
+      episodes: episodes.map(normalizeEpisode)
+    };
+  }
+
+  function normalizeEpisode(episode) {
+    const guests = Array.isArray(episode?.guests)
+      ? episode.guests.map(normalizeGuest)
+      : [];
+
+    return {
+      id: episode?.id || "",
+      name: episode?.name || episode?.title || "",
+      description: episode?.description || "",
+      episodeDate: episode?.episodeDate || null,
+      status: Array.isArray(episode?.status)
+        ? episode.status
+        : [episode?.status || ""],
+      episodeNumber: Number(
+        episode?.episodeNumber ??
+        episode?.number ??
+        0
+      ),
+      format: episode?.format || "Conversation",
+      durationMinutes:
+        episode?.durationMinutes ??
+        episode?.duration ??
+        null,
+      watchUrl: episode?.watchUrl || "#",
+      episodeVideo: getVideoUrl(episode?.episodeVideo || episode?.video || ""),
+      stillImage: getImageUrl(
+        episode?.stillImage || episode?.image || ""
+      ),
+      guests
+    };
+  }
+
+  function normalizeGuest(guest) {
+    const socialLinks = Array.isArray(guest?.socialLinks)
+      ? guest.socialLinks.map(link => ({
+          provider: getSocialProvider(link),
+          url: link?.url || "#"
+        }))
+      : [];
+
+    return {
+      id: guest?.id || "",
+      name: guest?.name || "",
+      headline: guest?.headline || "",
+      bio: guest?.bio || "",
+      headshot: getImageUrl(
+        guest?.headshot || guest?.image || ""
       ),
       socialLinks
     };
   }
 
-  function normalizeFallback(data) {
-    return {
-      episodes: (data.episodes || []).map(e => ({
-        id: e.id || "",
-        number: Number(e.episodeNumber ?? e.number ?? 0),
-        status: statusValue(e.status),
-        title: e.name || e.title || "",
-        format: e.format || "Conversation",
-        duration: e.durationMinutes ?? e.duration ?? "",
-        description: e.description || "",
-        video: e.video || e.videoUrl || "",
-        image: e.stillImage || e.image || "",
-        guests: (e.guests || []).map(g => normalizeGuest(g, {}, {})).filter(Boolean)
-      }))
-    };
+  async function loadFallback() {
+    const response = await fetch(CONTENT_URL, {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Could not load ${CONTENT_URL} (${response.status})`
+      );
+    }
+
+    const data = await response.json();
+    return normalizeFallback(data);
   }
 
   async function loadContentful() {
-    if (!CONFIG.enabled || !CONFIG.spaceId || !CONFIG.deliveryToken) {
+    if (
+      !CONFIG.enabled ||
+      !CONFIG.spaceId ||
+      !CONFIG.deliveryToken
+    ) {
       return null;
     }
 
-    const url =
-      `https://cdn.contentful.com/spaces/${encodeURIComponent(CONFIG.spaceId)}` +
-      `/environments/${encodeURIComponent(CONFIG.environment || "master")}` +
-      `/entries?access_token=${encodeURIComponent(CONFIG.deliveryToken)}` +
-      `&content_type=${encodeURIComponent(CONFIG.contentType || "episode")}` +
-      `&include=3&limit=1000`;
+    const environment = CONFIG.environment || "master";
 
-    const response = await fetch(url, { cache: "no-store" });
+    const endpoint =
+      `https://cdn.contentful.com/spaces/` +
+      `${encodeURIComponent(CONFIG.spaceId)}/environments/` +
+      `${encodeURIComponent(environment)}/entries`;
+
+    const params = new URLSearchParams({
+      access_token: CONFIG.deliveryToken,
+      content_type: CONFIG.contentType || "episode",
+      include: "3",
+      limit: "1000"
+    });
+
+    const response = await fetch(
+      `${endpoint}?${params.toString()}`,
+      { cache: "no-store" }
+    );
 
     if (!response.ok) {
-      throw new Error(`Contentful returned HTTP ${response.status}`);
+      throw new Error(
+        `Contentful returned HTTP ${response.status}`
+      );
     }
 
     const data = await response.json();
 
-    const assets = Object.fromEntries(
-      (data.includes?.Asset || []).map(a => [a.sys.id, a])
+    return normalizeContentful(data);
+  }
+
+  function normalizeContentful(data) {
+    const includedEntries =
+      data?.includes?.Entry || [];
+
+    const includedAssets =
+      data?.includes?.Asset || [];
+
+    const entries = new Map(
+      includedEntries.map(entry => [entry.sys.id, entry])
     );
 
-    const entries = Object.fromEntries(
-      (data.includes?.Entry || []).map(e => [e.sys.id, e])
+    const assets = new Map(
+      includedAssets.map(asset => [asset.sys.id, asset])
     );
 
-    return {
-      episodes: (data.items || []).map(item => {
-        const f = item.fields || {};
+    function resolveAsset(link) {
+      const assetId = link?.sys?.id;
 
-        const guests = (f.guests || [])
-          .map(link => entries[link?.sys?.id])
-          .filter(Boolean)
-          .map(g => normalizeGuest(g, assets, entries))
-          .filter(Boolean);
+      if (!assetId) return "";
 
-        return {
-          id: item.sys.id,
-          number: Number(f.episodeNumber || 0),
-          status: statusValue(f.status),
-          title: f.name || "",
-          format: f.format || "Conversation",
-          duration: f.durationMinutes ?? "",
-          description: f.description || "",
+      const asset = assets.get(assetId);
 
-          // Direct-upload Contentful video Asset
-          video: assetUrl(assets[f.video?.sys?.id]),
+      const url =
+        asset?.fields?.file?.url || "";
 
-          // Episode still/poster image
-          image: assetUrl(assets[f.stillImage?.sys?.id]),
+      if (!url) return "";
 
-          guests
-        };
-      })
-    };
-  }
-
-  async function loadData() {
-    if (CONFIG.enabled) {
-      try {
-        const data = await loadContentful();
-        if (data) return data;
-      } catch (error) {
-        console.error("Contentful error:", error);
-      }
+      return url.startsWith("//")
+        ? "https:" + url
+        : url;
     }
 
-    const response = await fetch(CONTENT_URL, { cache: "no-store" });
-    if (!response.ok) throw new Error("content.json missing");
-    return normalizeFallback(await response.json());
-  }
+    function resolveGuest(link) {
+      const guestId = link?.sys?.id;
+      const guest = entries.get(guestId);
 
-  function addVideoModal() {
-    if (document.getElementById("td-video-modal")) return;
+      if (!guest) return null;
 
-    const style = document.createElement("style");
-    style.textContent = `
-      #td-video-modal{
-        position:fixed;inset:0;z-index:99999;display:none;
-        align-items:center;justify-content:center;
-        padding:30px;background:rgba(0,0,0,.94);
-      }
-      #td-video-modal.open{display:flex}
-      #td-video-modal .td-video-panel{
-        position:relative;width:min(1180px,94vw);
-        background:#0c0b0a;border:1px solid rgba(242,240,234,.2);
-      }
-      #td-video-modal video{
-        display:block;width:100%;max-height:82vh;
-        background:#000;object-fit:contain;
-      }
-      #td-video-close{
-        position:absolute;right:0;top:-48px;width:38px;height:38px;
-        border:1px solid rgba(242,240,234,.35);
-        background:#0c0b0a;color:#f2f0ea;cursor:pointer;
-        font:22px/1 Arial,sans-serif;
-      }
-      body.td-video-open{overflow:hidden}
-      @media(max-width:700px){
-        #td-video-modal{padding:12px}
-        #td-video-close{top:-46px}
-      }
-    `;
-    document.head.appendChild(style);
+      const fields = guest.fields || {};
 
-    const modal = document.createElement("div");
-    modal.id = "td-video-modal";
-    modal.innerHTML = `
-      <div class="td-video-panel">
-        <button id="td-video-close" type="button" aria-label="Close video">×</button>
-        <video id="td-video" controls playsinline preload="metadata"></video>
-      </div>
-    `;
-    document.body.appendChild(modal);
+      const socialLinks = Array.isArray(fields.socialLinks)
+        ? fields.socialLinks
+            .map(link => {
+              const social = entries.get(link?.sys?.id);
 
-    const video = document.getElementById("td-video");
+              if (!social) return null;
 
-    function close() {
-      video.pause();
-      video.currentTime = 0;
-      video.removeAttribute("src");
-      video.load();
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("td-video-open");
+              return {
+                provider: getSocialProvider(
+                  social.fields || {}
+                ),
+                url: social.fields?.url || "#"
+              };
+            })
+            .filter(Boolean)
+        : [];
+
+      return {
+        id: guest.sys.id,
+        name: fields.name || "",
+        headline: fields.headline || "",
+        bio: fields.bio || "",
+        headshot: resolveAsset(fields.headshot),
+        socialLinks
+      };
     }
 
-    document.getElementById("td-video-close").addEventListener("click", close);
-    modal.addEventListener("click", e => {
-      if (e.target === modal) close();
+    const episodes = (data?.items || []).map(item => {
+      const fields = item.fields || {};
+
+      const guests = Array.isArray(fields.guests)
+        ? fields.guests
+            .map(resolveGuest)
+            .filter(Boolean)
+        : [];
+
+      return {
+        id: item.sys.id,
+        name: fields.name || "",
+        description: fields.description || "",
+        episodeDate: fields.episodeDate || null,
+        status: Array.isArray(fields.status)
+          ? fields.status
+          : [fields.status || ""],
+        episodeNumber: Number(
+          fields.episodeNumber || 0
+        ),
+        format: fields.format || "Conversation",
+        durationMinutes:
+          fields.durationMinutes ?? null,
+        watchUrl: fields.watchUrl || "#",
+        episodeVideo: resolveAsset(fields.episodeVideo),
+        stillImage: resolveAsset(fields.stillImage),
+        guests
+      };
     });
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") close();
-    });
 
-    window.playEpisodeVideo = url => {
-      if (!url) return;
-
-      // Reset any previously opened episode before loading the new one.
-      video.pause();
-      video.currentTime = 0;
-      video.removeAttribute("src");
-      video.load();
-
-      video.src = url;
-      video.currentTime = 0;
-      modal.classList.add("open");
-      modal.setAttribute("aria-hidden", "false");
-      document.body.classList.add("td-video-open");
-
-      // Start playback after the user clicks the episode play button.
-      video.play().catch(() => {
-        // Controls remain visible if the browser delays playback.
-      });
-    };
+    return { episodes };
   }
 
-  function guestMarkup(guest) {
-    const image = guest.headshot
-      ? `<img class="td-guest-avatar" src="${E(guest.headshot)}" alt="${E(guest.name)}">`
-      : `<span class="td-guest-avatar"></span>`;
+  function isPublic(episode) {
+    return getStatus(episode) === "public";
+  }
+
+  function isUpcoming(episode) {
+    return getStatus(episode) === "upcoming";
+  }
+
+  function sortByNumberDescending(a, b) {
+    return (
+      Number(b.episodeNumber || 0) -
+      Number(a.episodeNumber || 0)
+    );
+  }
+
+  function sortByNumberAscending(a, b) {
+    return (
+      Number(a.episodeNumber || 0) -
+      Number(b.episodeNumber || 0)
+    );
+  }
+
+  function guestAvatar(guest, light = false) {
+    const className = light
+      ? "td-guest-avatar td-light-avatar"
+      : "td-guest-avatar";
+
+    if (guest.headshot) {
+      return `
+        <img
+          class="${className}"
+          src="${escapeHTML(guest.headshot)}"
+          alt="${escapeHTML(guest.name)}"
+          loading="lazy"
+        >
+      `;
+    }
+
+    return `<span class="${className}"></span>`;
+  }
+
+  function socialIcon(provider) {
+    const name = String(provider || "").toLowerCase();
+
+    if (name === "linkedin") return "in";
+    if (name === "x") return "𝕏";
+    if (name === "youtube") return "▶";
+    if (name === "instagram") return "◎";
+    if (name === "facebook") return "f";
+
+    return "↗";
+  }
+
+  function renderSocialLinks(guest) {
+    if (!guest.socialLinks?.length) return "";
 
     return `
-      <div style="display:flex;align-items:center;gap:14px">
-        ${image}
-        <span style="font-size:15px;font-weight:600">
-          ${E(guest.name)}
-          ${guest.headline ? `<span style="font:11px 'IBM Plex Mono';color:rgba(242,240,234,.5)"> · ${E(guest.headline)}</span>` : ""}
-        </span>
+      <div style="
+        display:flex;
+        gap:8px;
+        margin-top:10px;
+      ">
+        ${guest.socialLinks.map(link => `
+          <a
+            href="${escapeHTML(link.url || "#")}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="${escapeHTML(link.provider)}"
+            style="
+              width:30px;
+              height:30px;
+              border:1px solid rgba(242,240,234,.25);
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              color:#F2F0EA;
+              text-decoration:none;
+              font-family:'IBM Plex Mono',monospace;
+              font-size:11px;
+            "
+          >${escapeHTML(socialIcon(link.provider))}</a>
+        `).join("")}
       </div>
     `;
   }
 
-  function videoTrigger(url, label) {
-    if (!url) return "";
+  function renderLatest(episode) {
+    const media = $("#latest-media");
+    const content = $("#latest-content");
 
-    return `
-      <button
-        type="button"
-        class="td-video-trigger"
-        data-video-url="${E(url)}"
-        style="display:inline-flex;align-items:center;gap:12px;padding:17px 30px;background:#F2F0EA;color:#0C0B0A;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;border:0;cursor:pointer"
-      >
-        ${E(label)} →
-      </button>
-    `;
-  }
-
-  function latest(e) {
-    const media = document.getElementById("latest-media");
-    const content = document.getElementById("latest-content");
     if (!media || !content) return;
 
-    // IMPORTANT: keep the exact visual composition of the target design:
-    // large media area on the left, content on the right.
-    media.innerHTML = `
-      <button
-        type="button"
-        class="td-video-trigger"
-        data-video-url="${E(e.video)}"
-        aria-label="Play ${E(e.title)}"
-        style="display:block;width:100%;height:100%;padding:0;border:0;background:transparent;position:relative;cursor:pointer"
-      >
-        ${
-          e.image
-            ? `<img src="${E(e.image)}" alt="${E(e.title)}" style="width:100%;height:100%;object-fit:cover;display:block">`
-            : `<div style="width:100%;height:100%;background:repeating-linear-gradient(135deg,#0c0b0a 0 2px,#171513 2px 11px);border:1px solid rgba(242,240,234,.2)"></div>`
-        }
+    const image = episode.stillImage
+      ? `
+        <img
+          src="${escapeHTML(episode.stillImage)}"
+          alt="${escapeHTML(episode.name)}"
+        >
+      `
+      : "";
 
-        <span class="td-play">▶</span>
+    const watchUrl = episode.watchUrl || "#";
+    const episodeVideo = episode.episodeVideo || "";
 
-        <span style="position:absolute;left:18px;bottom:18px;font:10px 'IBM Plex Mono';letter-spacing:.14em;text-transform:uppercase;background:#0C0B0A;padding:6px 10px">
-          episode still
-        </span>
-      </button>
-    `;
+    media.innerHTML = episodeVideo
+      ? `
+        <button
+          type="button"
+          class="td-video-trigger"
+          data-video-url="${escapeHTML(episodeVideo)}"
+          aria-label="Play ${escapeHTML(episode.name)}"
+          style="display:block;width:100%;height:100%;padding:0;border:0;background:#0C0B0A;position:relative;cursor:pointer;overflow:hidden"
+        >
+          ${image}
+          <span class="td-play">▶</span>
+          <span style="
+            position:absolute;
+            left:18px;
+            bottom:18px;
+            font-family:'IBM Plex Mono',monospace;
+            font-size:10px;
+            letter-spacing:.14em;
+            text-transform:uppercase;
+            color:rgba(242,240,234,.7);
+            background:#0C0B0A;
+            padding:6px 10px;
+          ">play episode</span>
+        </button>
+      `
+      : `
+        <div style="display:block;height:100%;position:relative">
+          ${image}
+          <span style="
+            position:absolute;
+            left:18px;
+            bottom:18px;
+            font-family:'IBM Plex Mono',monospace;
+            font-size:10px;
+            letter-spacing:.14em;
+            text-transform:uppercase;
+            color:rgba(242,240,234,.7);
+            background:#0C0B0A;
+            padding:6px 10px;
+          ">episode still</span>
+        </div>
+      `;
+
+    const guests = episode.guests || [];
+
+    const guestMarkup = guests.length
+      ? guests.map(guest => `
+          <div style="
+            display:flex;
+            align-items:center;
+            gap:14px;
+          ">
+            ${guestAvatar(guest)}
+
+            <div>
+              <div style="
+                font-size:15px;
+                font-weight:600;
+              ">
+                ${escapeHTML(guest.name)}
+              </div>
+
+              <div style="
+                font-family:'IBM Plex Mono',monospace;
+                font-size:11px;
+                color:rgba(242,240,234,.5);
+                margin-top:3px;
+              ">
+                ${escapeHTML(guest.headline)}
+              </div>
+            </div>
+          </div>
+        `).join("")
+      : `
+        <div style="
+          font-family:'IBM Plex Mono',monospace;
+          font-size:11px;
+          color:rgba(242,240,234,.5);
+        ">
+          Guest details coming soon
+        </div>
+      `;
 
     const meta = [
-      `№ ${e.number}`,
-      e.format,
-      e.duration ? `${e.duration} MIN` : ""
+      episode.format,
+      guests.length
+        ? `${guests.length} guest${guests.length === 1 ? "" : "s"}`
+        : "",
+      episode.durationMinutes
+        ? `${episode.durationMinutes} min`
+        : ""
     ].filter(Boolean).join(" · ");
 
     content.innerHTML = `
-      <div style="font:11px 'IBM Plex Mono';letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,234,.65);margin-bottom:18px">
-        ${E(meta)}
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-bottom:18px;
+      ">
+        <span style="
+          width:7px;
+          height:7px;
+          border-radius:999px;
+          background:#F2F0EA;
+          display:inline-block;
+        "></span>
+
+        <span style="
+          font-family:'IBM Plex Mono',monospace;
+          font-size:11px;
+          letter-spacing:.16em;
+          text-transform:uppercase;
+          color:rgba(242,240,234,.65);
+        ">
+          № ${escapeHTML(episode.episodeNumber || "")}
+          ${meta ? " · " + escapeHTML(meta) : ""}
+        </span>
       </div>
 
-      <h3 style="font-size:clamp(26px,2.8vw,38px);font-weight:700;letter-spacing:-.03em;line-height:1.12;margin:0 0 20px">
-        ${E(e.title)}
+      <h3 style="
+        font-size:clamp(26px,2.8vw,38px);
+        font-weight:700;
+        letter-spacing:-.03em;
+        line-height:1.12;
+        margin:0 0 20px;
+      ">
+        ${escapeHTML(episode.name)}
       </h3>
 
-      <p style="font-size:17px;line-height:1.6;color:rgba(242,240,234,.68);margin:0 0 28px;max-width:46ch">
-        ${E(e.description)}
+      <p style="
+        font-size:17px;
+        line-height:1.6;
+        color:rgba(242,240,234,.68);
+        margin:0 0 28px;
+        max-width:46ch;
+      ">
+        ${escapeHTML(episode.description)}
       </p>
 
-      <div style="display:flex;flex-direction:column;gap:12px;padding:22px 0;border-top:1px solid rgba(242,240,234,.18);border-bottom:1px solid rgba(242,240,234,.18);margin-bottom:28px">
-        ${(e.guests || []).map(guestMarkup).join("")}
+      <div style="
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+        padding:22px 0;
+        border-top:1px solid rgba(242,240,234,.18);
+        border-bottom:1px solid rgba(242,240,234,.18);
+        margin-bottom:28px;
+      ">
+        ${guestMarkup}
       </div>
 
-      ${videoTrigger(e.video, "Watch the episode")}
-    `;
-
-    if (!e.video) {
-      const button = media.querySelector(".td-video-trigger");
-      if (button) {
-        button.disabled = true;
-        button.style.cursor = "default";
+      ${
+        episodeVideo
+          ? `
+            <button
+              type="button"
+              class="td-video-trigger"
+              data-video-url="${escapeHTML(episodeVideo)}"
+              style="
+                display:inline-flex;
+                align-items:center;
+                gap:12px;
+                padding:17px 30px;
+                background:#F2F0EA;
+                color:#0C0B0A;
+                font-size:13px;
+                font-weight:700;
+                letter-spacing:.1em;
+                text-transform:uppercase;
+                border-radius:999px;
+                border:0;
+                cursor:pointer;
+              "
+            >
+              Watch the episode
+              <span style="
+                font-family:'IBM Plex Mono',monospace;
+                font-size:15px;
+              ">→</span>
+            </button>
+          `
+          : watchUrl !== "#"
+            ? `
+              <a
+                href="${escapeHTML(watchUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="display:inline-flex;align-items:center;gap:12px;padding:17px 30px;background:#F2F0EA;color:#0C0B0A;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;text-decoration:none;"
+              >Watch the episode <span style="font-family:'IBM Plex Mono',monospace;font-size:15px;">→</span></a>
+            `
+            : ""
       }
-    }
+    `;
   }
 
-  function upcoming(items) {
-    const root = document.getElementById("upcoming-list");
+  function renderUpcoming(episodes) {
+    const root = $("#upcoming-list");
+
     if (!root) return;
 
-    root.innerHTML = items.length
-      ? items.map(e => `
-        <div
+    if (!episodes.length) {
+      root.innerHTML = `
+        <div class="td-empty">
+          No upcoming episodes yet. Add one in Contentful.
+        </div>
+      `;
+      return;
+    }
+
+    root.innerHTML = episodes.map(episode => {
+      const image = episode.stillImage
+        ? `
+          <img
+            src="${escapeHTML(episode.stillImage)}"
+            alt="${escapeHTML(episode.name)}"
+            loading="lazy"
+          >
+        `
+        : `
+          <div style="
+            flex:0 0 176px;
+            width:176px;
+            aspect-ratio:16/10;
+            border:1px solid rgba(242,240,234,.22);
+            background:repeating-linear-gradient(
+              135deg,
+              rgba(242,240,234,.16) 0 2px,
+              transparent 2px 11px
+            );
+            display:flex;
+            align-items:center;
+            justify-content:center;
+          ">
+            <span style="
+              font-family:'IBM Plex Mono',monospace;
+              font-size:9px;
+              letter-spacing:.14em;
+              text-transform:uppercase;
+              color:rgba(242,240,234,.55);
+            ">episode still</span>
+          </div>
+        `;
+
+      const guestCount = episode.guests?.length || 0;
+
+      return `
+        <a
+          href="${escapeHTML(episode.watchUrl || "#")}"
+          ${episode.watchUrl && episode.watchUrl !== "#"
+            ? 'target="_blank" rel="noopener noreferrer"'
+            : ""
+          }
           class="td-card td-episode-card"
           data-reveal="1"
-          style="display:flex;align-items:center;gap:30px;padding:24px 28px;background:#0C0B0A;color:#F2F0EA;opacity:0;transform:translateY(22px)"
+          style="
+            display:flex;
+            align-items:center;
+            gap:30px;
+            padding:24px 28px;
+            background:#0C0B0A;
+            color:#F2F0EA;
+            text-decoration:none;
+            opacity:0;
+            transform:translateY(22px);
+          "
         >
-          ${e.image
-            ? `<img src="${E(e.image)}" alt="${E(e.title)}" loading="lazy">`
-            : `<div style="flex:0 0 176px;width:176px;aspect-ratio:16/10;border:1px solid rgba(242,240,234,.22);background:repeating-linear-gradient(135deg,#0c0b0a 0 2px,#171513 2px 11px);"></div>`
-          }
+          ${image}
 
           <div style="min-width:108px">
-            <div style="font:11px 'IBM Plex Mono';letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,234,.55);margin-bottom:8px">Next up</div>
-            <div style="font-size:32px;font-weight:800">№ ${E(e.number)}</div>
+            <div style="
+              font-family:'IBM Plex Mono',monospace;
+              font-size:11px;
+              letter-spacing:.16em;
+              text-transform:uppercase;
+              color:rgba(242,240,234,.55);
+              margin-bottom:8px;
+            ">Next up</div>
+
+            <div style="
+              font-family:Archivo,sans-serif;
+              font-weight:800;
+              font-size:32px;
+              line-height:1;
+            ">
+              № ${escapeHTML(episode.episodeNumber)}
+            </div>
           </div>
 
-          <div style="flex:1">
-            <div style="font:11px 'IBM Plex Mono';letter-spacing:.14em;text-transform:uppercase;color:rgba(242,240,234,.55);margin-bottom:10px">
-              ${E(e.format)} · ${(e.guests || []).length} guest${(e.guests || []).length === 1 ? "" : "s"}
+          <div style="flex:1;min-width:0">
+            <div style="
+              font-family:'IBM Plex Mono',monospace;
+              font-size:11px;
+              letter-spacing:.14em;
+              text-transform:uppercase;
+              color:rgba(242,240,234,.55);
+              margin-bottom:10px;
+            ">
+              ${escapeHTML(episode.format)}
+              · ${guestCount} guest${guestCount === 1 ? "" : "s"}
             </div>
-            <div style="font-size:clamp(20px,2vw,27px);font-weight:700">${E(e.title)}</div>
-            <div style="font:11px 'IBM Plex Mono';color:rgba(242,240,234,.55);margin-top:12px">${E(e.description)}</div>
+
+            <div style="
+              font-size:clamp(20px,2vw,27px);
+              font-weight:700;
+              letter-spacing:-.025em;
+              line-height:1.2;
+            ">
+              ${escapeHTML(episode.name)}
+            </div>
+
+            <div style="
+              font-family:'IBM Plex Mono',monospace;
+              font-size:11px;
+              letter-spacing:.08em;
+              color:rgba(242,240,234,.55);
+              margin-top:12px;
+            ">
+              ${escapeHTML(episode.description || "Details coming soon.")}
+            </div>
           </div>
-        </div>
-      `).join("")
-      : "<div class='td-empty'>No upcoming episodes yet.</div>";
+        </a>
+      `;
+    }).join("");
   }
 
-  function archive(items) {
-    const root = document.getElementById("archive-list");
+  function renderArchive(episodes) {
+    const root = $("#archive-list");
+
     if (!root) return;
 
-    root.innerHTML = items.length
-      ? items.map(e => `
-        <div class="td-sess" data-reveal="1"
-          style="display:grid;grid-template-columns:92px 1fr 230px 52px;gap:24px;align-items:center;padding:32px 10px;border-bottom:1px solid rgba(242,240,234,.18);opacity:0;transform:translateY(18px)">
-          <span style="font:12px 'IBM Plex Mono';color:rgba(242,240,234,.5)">№ ${E(e.number)}</span>
-          <span style="font-size:clamp(19px,2vw,26px);font-weight:700">${E(e.title)}</span>
-          <span class="td-sessmeta" style="font:12px 'IBM Plex Mono';color:rgba(242,240,234,.5)">${E(e.format)} · ${(e.guests || []).length} guests${e.duration ? ` · ${E(e.duration)} min` : ""}</span>
-          <span>
-            ${e.video ? videoTrigger(e.video, "Play") : "→"}
-          </span>
+    if (!episodes.length) {
+      root.innerHTML = `
+        <div class="td-empty">
+          No archived episodes yet.
         </div>
-      `).join("")
-      : "<div class='td-empty'>No archived episodes yet.</div>";
+      `;
+      return;
+    }
+
+    root.innerHTML = episodes.map(episode => `
+      <a
+        href="${escapeHTML(episode.watchUrl || "#")}"
+        ${episode.watchUrl && episode.watchUrl !== "#"
+          ? 'target="_blank" rel="noopener noreferrer"'
+          : ""
+        }
+        class="td-sess"
+        data-reveal="1"
+        style="
+          display:grid;
+          grid-template-columns:92px 1fr 230px 52px;
+          gap:24px;
+          align-items:center;
+          padding:32px 10px;
+          border-bottom:1px solid rgba(242,240,234,.18);
+          text-decoration:none;
+          opacity:0;
+          transform:translateY(18px);
+        "
+      >
+        <span style="
+          font-family:'IBM Plex Mono',monospace;
+          font-size:12px;
+          color:rgba(242,240,234,.5);
+          letter-spacing:.1em;
+        ">
+          № ${escapeHTML(episode.episodeNumber)}
+        </span>
+
+        <span style="
+          font-size:clamp(19px,2vw,26px);
+          font-weight:700;
+          letter-spacing:-.025em;
+        ">
+          ${escapeHTML(episode.name)}
+        </span>
+
+        <span
+          class="td-sessmeta"
+          style="
+            font-family:'IBM Plex Mono',monospace;
+            font-size:12px;
+            color:rgba(242,240,234,.5);
+          "
+        >
+          ${escapeHTML(episode.format)}
+          · ${episode.guests?.length || 0} guests
+          ${episode.durationMinutes
+            ? ` · ${escapeHTML(episode.durationMinutes)} min`
+            : ""
+          }
+        </span>
+
+        <span style="
+          font-family:'IBM Plex Mono',monospace;
+          font-size:18px;
+          text-align:right;
+        ">→</span>
+      </a>
+    `).join("");
+  }
+
+  function renderGuests(episodes) {
+    const root = $("#guest-grid");
+
+    if (!root) return;
+
+    const guestMap = new Map();
+
+    episodes.forEach(episode => {
+      (episode.guests || []).forEach(guest => {
+        if (
+          guest.name &&
+          !guestMap.has(guest.id || guest.name)
+        ) {
+          guestMap.set(
+            guest.id || guest.name,
+            guest
+          );
+        }
+      });
+    });
+
+    const guests = [...guestMap.values()];
+
+    if (!guests.length) {
+      root.innerHTML = `
+        <div class="td-empty" style="grid-column:1/-1">
+          Guests will appear here when episodes have guest entries.
+        </div>
+      `;
+      return;
+    }
+
+    root.innerHTML = guests.slice(0, 8).map(guest => `
+      <div
+        data-reveal="1"
+        style="
+          opacity:0;
+          transform:translateY(26px);
+        "
+      >
+        <div style="
+          aspect-ratio:3/4;
+          background:#171513;
+          border:1px solid rgba(242,240,234,.2);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          margin-bottom:18px;
+          overflow:hidden;
+        ">
+          ${
+            guest.headshot
+              ? `
+                <img
+                  src="${escapeHTML(guest.headshot)}"
+                  alt="${escapeHTML(guest.name)}"
+                  style="
+                    width:100%;
+                    height:100%;
+                    object-fit:cover;
+                  "
+                  loading="lazy"
+                >
+              `
+              : `
+                <span style="
+                  font-family:'IBM Plex Mono',monospace;
+                  font-size:10px;
+                  letter-spacing:.14em;
+                  text-transform:uppercase;
+                  color:rgba(242,240,234,.6);
+                ">headshot</span>
+              `
+          }
+        </div>
+
+        <div style="
+          font-size:18px;
+          font-weight:700;
+          letter-spacing:-.015em;
+          margin-bottom:5px;
+        ">
+          ${escapeHTML(guest.name)}
+        </div>
+
+        <div style="
+          font-family:'IBM Plex Mono',monospace;
+          font-size:12px;
+          color:rgba(242,240,234,.55);
+          line-height:1.5;
+        ">
+          ${escapeHTML(guest.headline)}
+        </div>
+
+        ${renderSocialLinks(guest)}
+      </div>
+    `).join("");
   }
 
   function reveal() {
-    document.querySelectorAll('[data-reveal="1"]').forEach((el, i) => {
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          setTimeout(() => {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-          }, Math.min(i, 8) * 60);
-          observer.unobserve(entry.target);
+    const elements =
+      document.querySelectorAll(
+        '[data-reveal="1"]'
+      );
+
+    if (!("IntersectionObserver" in window)) {
+      elements.forEach(element => {
+        element.style.opacity = "1";
+        element.style.transform = "translateY(0)";
+      });
+      return;
+    }
+
+    elements.forEach((element, index) => {
+      element.style.transition =
+        "opacity 800ms cubic-bezier(.2,.8,.2,1), " +
+        "transform 800ms cubic-bezier(.2,.8,.2,1)";
+
+      const observer =
+        new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+
+            setTimeout(() => {
+              element.style.opacity = "1";
+              element.style.transform =
+                "translateY(0)";
+            }, Math.min(index, 8) * 60);
+
+            observer.unobserve(element);
+          });
+        }, {
+          rootMargin: "0px 0px -12% 0px",
+          threshold: 0.08
         });
-      }, { rootMargin:"0px 0px -12% 0px", threshold:.08 });
-      observer.observe(el);
+
+      observer.observe(element);
     });
   }
 
-  function initInteractions() {
-    addVideoModal();
+  function ensureVideoModal() {
+    if (document.querySelector(".td-video-modal")) return;
+
+    document.body.insertAdjacentHTML("beforeend", `
+      <div class="td-video-modal" aria-hidden="true" style="
+        position:fixed;
+        inset:0;
+        z-index:999999;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        padding:24px;
+        background:rgba(0,0,0,.94);
+      ">
+        <div class="td-video-modal-panel" role="dialog" aria-modal="true" aria-label="Episode video" style="
+          position:relative;
+          width:min(1200px,96vw);
+          background:#0C0B0A;
+          border:1px solid rgba(242,240,234,.2);
+          box-shadow:0 30px 100px rgba(0,0,0,.6);
+        ">
+          <button type="button" class="td-video-close" aria-label="Close video" style="
+            position:absolute;
+            top:-48px;
+            right:0;
+            width:40px;
+            height:40px;
+            border:1px solid rgba(242,240,234,.4);
+            background:#0C0B0A;
+            color:#F2F0EA;
+            cursor:pointer;
+            font-size:24px;
+            line-height:1;
+          ">×</button>
+          <video class="td-popup-video" controls playsinline preload="metadata" style="display:block;width:100%;max-height:82vh;background:#000;"></video>
+          <div style="display:flex;justify-content:flex-end;padding:12px 16px;">
+            <button type="button" class="td-video-close-text" style="background:transparent;border:0;color:rgba(242,240,234,.7);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Close video</button>
+          </div>
+        </div>
+      </div>
+    `);
+
+    const modal = document.querySelector(".td-video-modal");
+    const video = modal.querySelector(".td-popup-video");
+    const closeButtons = modal.querySelectorAll(".td-video-close, .td-video-close-text");
+
+    function closeVideo() {
+      video.pause();
+      try { video.currentTime = 0; } catch (_) {}
+      video.removeAttribute("src");
+      video.load();
+      modal.style.display = "none";
+      modal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    function openVideo(url) {
+      if (!url) return;
+      video.src = url;
+      video.load();
+      modal.style.display = "flex";
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(error => console.warn("Video autoplay was blocked:", error));
+      }
+    }
+
+    closeButtons.forEach(button => button.addEventListener("click", closeVideo));
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closeVideo();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && modal.style.display === "flex") {
+        closeVideo();
+      }
+    });
 
     document.addEventListener("click", event => {
       const trigger = event.target.closest(".td-video-trigger");
       if (!trigger) return;
-
       event.preventDefault();
-      const url = trigger.getAttribute("data-video-url");
-      if (url && window.playEpisodeVideo) {
-        window.playEpisodeVideo(url);
-      }
-    });
-
-    const form = document.getElementById("application-form");
-    form?.addEventListener("submit", event => {
-      event.preventDefault();
-      const button = form.querySelector("button");
-      if (button) button.textContent = "Received — we'll be in touch";
-      form.reset();
+      openVideo(trigger.getAttribute("data-video-url"));
     });
   }
 
-  async function main() {
-    try {
-      const data = await loadData();
-      const episodes = data.episodes || [];
+  function initInteractions() {
+    ensureVideoModal();
 
-      const published = episodes
-        .filter(e => e.status === "public")
-        .sort((a,b) => b.number - a.number);
+    const hero = $("#top");
 
-      const upcomingItems = episodes
-        .filter(e => e.status === "upcoming")
-        .sort((a,b) => a.number - b.number);
+    if (!hero) return;
 
-      const latestEpisode = published[0];
+    const inner =
+      hero.querySelector('[data-parallax="1"]');
 
-      if (latestEpisode) {
-        latest(latestEpisode);
+    function onScroll() {
+      if (!inner) return;
+
+      const heroHeight = hero.offsetHeight;
+      const viewportHeight = window.innerHeight;
+
+      if (heroHeight <= viewportHeight * 1.15) {
+        const span = Math.max(
+          240,
+          heroHeight - 120
+        );
+
+        const progress = Math.min(
+          1,
+          Math.max(
+            0,
+            window.scrollY / span
+          )
+        );
+
+        inner.style.transform =
+          `translateY(${progress * 110}px)`;
+
+        inner.style.opacity =
+          String(1 - progress);
       }
+    }
 
-      upcoming(upcomingItems);
-      archive(published.slice(1));
-      reveal();
-      initInteractions();
+    window.addEventListener(
+      "scroll",
+      onScroll,
+      { passive: true }
+    );
 
-    } catch (error) {
-      console.error("Thinkers & Doers error:", error);
-      document.body.insertAdjacentHTML(
-        "afterbegin",
-        `<div class="td-error">Could not load episode content. Check Contentful settings or content.json.</div>`
+    onScroll();
+
+    const form =
+      $("#application-form");
+
+    if (form) {
+      form.addEventListener(
+        "submit",
+        event => {
+          event.preventDefault();
+
+          const button =
+            form.querySelector(
+              'button[type="submit"]'
+            );
+
+          if (button) {
+            button.textContent =
+              "Received — we'll be in touch";
+          }
+
+          form.reset();
+        }
       );
     }
   }
 
-  document.addEventListener("DOMContentLoaded", main);
+  function showError(error) {
+    console.error(
+      "Thinkers & Doers content error:",
+      error
+    );
+
+    const existing =
+      $(".td-error");
+
+    if (existing) return;
+
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      `
+        <div class="td-error">
+          Could not load episode content.
+          Check Contentful settings or content.json.
+        </div>
+      `
+    );
+  }
+
+  async function main() {
+    try {
+      let data = null;
+
+      /*
+       * TEST MODE:
+       * Contentful disabled → use content.json.
+       *
+       * CONTENTFUL MODE:
+       * Contentful enabled → use Contentful.
+       * If Contentful fails, fall back to content.json.
+       */
+      if (CONFIG.enabled) {
+        try {
+          data = await loadContentful();
+        } catch (contentfulError) {
+          console.warn(
+            "Contentful failed. Falling back to content.json.",
+            contentfulError
+          );
+        }
+      }
+
+      if (!data) {
+        data = await loadFallback();
+      }
+
+      const episodes =
+        Array.isArray(data.episodes)
+          ? data.episodes
+          : [];
+
+      const upcomingEpisodes =
+        episodes
+          .filter(isUpcoming)
+          .sort(sortByNumberAscending);
+
+      const publicEpisodes =
+        episodes
+          .filter(isPublic)
+          .sort(sortByNumberDescending);
+
+      /*
+       * Newest public episode = Latest.
+       * Remaining public episodes = Archive.
+       */
+      const latestEpisode =
+        publicEpisodes[0] || null;
+
+      const archiveEpisodes =
+        publicEpisodes.slice(1);
+
+      if (latestEpisode) {
+        renderLatest(latestEpisode);
+      } else {
+        const content =
+          $("#latest-content");
+
+        if (content) {
+          content.innerHTML = `
+            <div class="td-empty">
+              No published episode yet.
+            </div>
+          `;
+        }
+      }
+
+      renderUpcoming(upcomingEpisodes);
+      renderArchive(archiveEpisodes);
+
+      /*
+       * Guests are collected from all published/upcoming episodes.
+       */
+      renderGuests([
+        ...publicEpisodes,
+        ...upcomingEpisodes
+      ]);
+
+      reveal();
+      initInteractions();
+
+    } catch (error) {
+      showError(error);
+    }
+  }
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    main
+  );
 })();
