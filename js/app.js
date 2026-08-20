@@ -1270,19 +1270,22 @@ if (form) {
           .sort(sortByNumberAscending);
 
       const publicEpisodes =
-        episodes
-          .filter(isPublic)
-          .sort(sortByNumberDescending);
+  episodes
+    .filter(isPublic)
+    .sort(sortByNumberDescending);
 
-      /*
-       * Newest public episode = Latest.
-       * Remaining public episodes = Archive.
-       */
-      const latestEpisode =
-        publicEpisodes[0] || null;
+// Old + public episodes should appear in All Episodes
+const archiveEpisodes =
+  episodes
+    .filter(episode => {
+      const status = getStatus(episode);
+      return status === "public" || status === "old";
+    })
+    .sort(sortByNumberDescending);
 
-      const archiveEpisodes =
-        publicEpisodes.slice(1);
+// Latest episode = newest public episode
+const latestEpisode =
+  publicEpisodes[0] || null;
 
       if (latestEpisode) {
         renderLatest(latestEpisode);
