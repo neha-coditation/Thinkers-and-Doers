@@ -335,6 +335,32 @@
     opacity: 1 !important;
   }
   ::selection { background: #F2F0EA; color: #0C0B0A; }
+  /* Reference button + card hover interactions */
+  button, .td-hover-btn {
+    transition: transform 300ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms ease, background 300ms ease, border-color 300ms ease !important;
+  }
+  button:hover, .td-hover-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 36px rgba(12,11,10,0.28);
+  }
+  .td-hover-card {
+    will-change: transform, background, border-color;
+  }
+  .td-hover-card:hover {
+    background: rgba(242,240,234,0.06) !important;
+    border-color: rgba(242,240,234,0.5) !important;
+  }
+  .td-hover-card-light:hover {
+    background: rgba(12,11,10,0.045) !important;
+    border-color: rgba(12,11,10,0.45) !important;
+    transform: translateY(-4px) !important;
+  }
+  .td-hover-media:hover {
+    background: rgba(242,240,234,0.08) !important;
+    border-color: #F2F0EA !important;
+    transform: translateY(-6px) !important;
+  }
+
   @keyframes tdmar { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @keyframes tdmarR { from { transform: translateX(-50%); } to { transform: translateX(0); } }
   @keyframes tdrise { from { transform: translateY(105%) rotate(3deg); opacity: 0; } to { transform: translateY(0) rotate(0deg); opacity: 1; } }
@@ -382,6 +408,98 @@
     .td-row { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
     .td-card { flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; }
   }
+
+/* Final button + card hover animations */
+.td-navlinks a,
+.td-all-episodes a,
+.td-all-episodes button,
+.td-take-seat,
+.td-claim-chair,
+.td-whats-next,
+.td-watch-episode,
+.td-watch,
+.td-cta,
+.td-button,
+.td-btn {
+  transition:
+    color 260ms ease,
+    background-color 260ms ease,
+    border-color 260ms ease,
+    box-shadow 300ms ease,
+    transform 300ms cubic-bezier(.2,.7,.2,1),
+    opacity 260ms ease;
+}
+
+/* Take a seat / Claim a chair / What's next / Watch the episode */
+.td-take-seat:hover,
+.td-claim-chair:hover,
+.td-whats-next:hover,
+.td-watch-episode:hover,
+.td-watch:hover,
+.td-cta:hover,
+.td-button:hover,
+.td-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+}
+
+/* All Episodes behaves like navbar links */
+.td-all-episodes a:hover,
+.td-all-episodes button:hover {
+  color: #D4AF37 !important;
+  border-color: #D4AF37 !important;
+}
+
+/* Card hover */
+.td-card,
+.td-episode-card,
+.td-guest-card,
+.td-archive-card,
+.td-table-card,
+.td-media-card,
+.td-upcoming-card {
+  transition:
+    transform 360ms cubic-bezier(.2,.7,.2,1),
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 360ms ease;
+}
+
+.td-card:hover,
+.td-episode-card:hover,
+.td-guest-card:hover,
+.td-archive-card:hover,
+.td-table-card:hover,
+.td-media-card:hover,
+.td-upcoming-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212,175,55,.72);
+  box-shadow: 0 14px 32px rgba(0,0,0,.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-navlinks a,
+  .td-all-episodes a,
+  .td-all-episodes button,
+  .td-take-seat,
+  .td-claim-chair,
+  .td-whats-next,
+  .td-watch-episode,
+  .td-watch,
+  .td-cta,
+  .td-button,
+  .td-btn,
+  .td-card,
+  .td-episode-card,
+  .td-guest-card,
+  .td-archive-card,
+  .td-table-card,
+  .td-media-card,
+  .td-upcoming-card {
+    transition: none !important;
+  }
+}
+
 </style>
 
 <div style="font-family: Archivo, Helvetica, Arial, sans-serif; background: #0C0B0A; color: #F2F0EA; overflow-x: clip;">
@@ -645,6 +763,47 @@ document.addEventListener('DOMContentLoaded', function () {
     glow.style.transform = 'translate(' + rect.width * 0.62 + 'px,' + rect.height * 0.42 + 'px)';
   }
 
+  // Restore the reference's declarative style-hover behavior used by the source page.
+  // The original design stores hover styles in style-hover attributes; the static index
+  // does not have the runtime that interprets those attributes, so we recreate it here.
+  document.querySelectorAll('[style-hover]').forEach((el) => {
+    const hover = el.getAttribute('style-hover');
+    if (!hover) return;
+    const original = {};
+    hover.split(';').forEach((rule) => {
+      const parts = rule.split(':');
+      if (parts.length < 2) return;
+      const prop = parts.shift().trim();
+      if (!prop) return;
+      original[prop] = el.style.getPropertyValue(prop);
+    });
+    el.addEventListener('mouseenter', () => {
+      hover.split(';').forEach((rule) => {
+        const parts = rule.split(':');
+        if (parts.length < 2) return;
+        const prop = parts.shift().trim();
+        const value = parts.join(':').trim();
+        if (prop && value) el.style.setProperty(prop, value);
+      });
+    });
+    el.addEventListener('mouseleave', () => {
+      Object.keys(original).forEach((prop) => {
+        if (original[prop]) el.style.setProperty(prop, original[prop]);
+        else el.style.removeProperty(prop);
+      });
+    });
+  });
+
+  // Card styles from the reference: subtle lift + brighter border/background.
+  document.querySelectorAll('[style*="transition: background 420ms ease"]').forEach((card) => {
+    card.classList.add('td-hover-card');
+  });
+
+  // Media/placeholder cards use the stronger -6px lift from the reference.
+  document.querySelectorAll('[style*="aspect-ratio: 3 / 4"]').forEach((card) => {
+    if (card.querySelector('[style*="border: 1px dashed"]')) card.classList.add('td-hover-media');
+  });
+
   // Hero parallax on scroll: same 110px maximum movement and fade.
   const updateParallax = () => {
     if (!hero || !parallax) return;
@@ -664,6 +823,34 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('scroll', updateParallax, { passive: true });
   updateParallax();
 });
+</script>
+
+
+<script>
+(function () {
+  function applyRequestedHoverClasses() {
+    document.querySelectorAll("a, button").forEach(function (el) {
+      var text = (el.textContent || "").trim().toLowerCase();
+
+      if (text === "take a seat") el.classList.add("td-take-seat");
+      if (text === "claim a chair") el.classList.add("td-claim-chair");
+      if (text === "what's next" || text === "whats next") el.classList.add("td-whats-next");
+      if (text === "watch the episode") el.classList.add("td-watch-episode");
+
+      if (text === "all episodes") {
+        var parent = el.closest("section, div, nav") || el.parentElement;
+        if (parent) parent.classList.add("td-all-episodes");
+        el.classList.add("td-all-episodes");
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyRequestedHoverClasses, { once: true });
+  } else {
+    applyRequestedHoverClasses();
+  }
+})();
 </script>
 
 </body></html>
