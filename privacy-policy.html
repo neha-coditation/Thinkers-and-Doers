@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Thinkers & Doers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: #0C0B0A;
+    color: #F2F0EA;
+    font-family: 'Archivo', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: #F2F0EA; color: #0C0B0A; }
+
+  .td-pad { padding-left: 48px; padding-right: 48px; }
+
+  header.td-pad {
+    position: sticky; top: 0; z-index: 60;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; padding-top: 18px; padding-bottom: 18px;
+    border-bottom: 1px solid rgba(242,240,234,0.12);
+    background: rgba(12,11,10,0.88);
+    backdrop-filter: blur(10px);
+  }
+  .td-word {
+    font-family: 'Archivo', sans-serif; font-weight: 900; font-size: 18px;
+    letter-spacing: -0.02em; text-transform: uppercase; display: flex; align-items: baseline; gap: 8px;
+  }
+  .td-word em {
+    font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400;
+    text-transform: none; opacity: 0.7; font-size: 19px;
+  }
+  .td-back {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em;
+    text-transform: uppercase; opacity: 0.7; transition: opacity 250ms ease;
+    padding: 10px 18px; border: 1px solid rgba(242,240,234,0.28); border-radius: 999px;
+  }
+  .td-back:hover { opacity: 1; border-color: #F2F0EA; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: rgba(242,240,234,0.55); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow span.dot { width: 7px; height: 7px; border-radius: 999px; background: #F2F0EA; display: inline-block; }
+
+  .hero {
+    max-width: 1360px; margin: 0 auto; padding: 84px 48px 56px;
+    border-bottom: 1px solid rgba(242,240,234,0.14);
+  }
+  .hero h1 {
+    font-family: 'Archivo', sans-serif; font-weight: 900; font-size: clamp(38px, 6vw, 68px);
+    line-height: 0.95; letter-spacing: -0.04em; text-transform: uppercase; margin: 0 0 22px;
+  }
+  .hero h1 em {
+    font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400;
+    text-transform: none; letter-spacing: -0.02em;
+  }
+  .hero p.lede {
+    font-size: clamp(16px, 1.3vw, 19px); line-height: 1.6; color: rgba(242,240,234,0.75);
+    max-width: 62ch; margin: 0;
+  }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 28px; margin-top: 34px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em;
+    color: rgba(242,240,234,0.5); text-transform: uppercase;
+  }
+
+  .layout {
+    max-width: 1360px; margin: 0 auto; padding: 64px 48px 100px;
+    display: grid; grid-template-columns: 260px minmax(0,1fr); gap: 64px; align-items: start;
+  }
+  nav.toc {
+    position: sticky; top: 96px;
+    border-left: 1px solid rgba(242,240,234,0.14);
+    padding-left: 22px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  nav.toc a {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.05em;
+    color: rgba(242,240,234,0.55); padding: 9px 0; transition: color 220ms ease, padding-left 220ms ease;
+    border-bottom: 1px solid transparent;
+  }
+  nav.toc a:hover { color: #F2F0EA; padding-left: 4px; }
+  nav.toc .toc-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: rgba(242,240,234,0.4); margin-bottom: 10px;
+  }
+
+  article section { margin-bottom: 56px; scroll-margin-top: 96px; }
+  article section:last-child { margin-bottom: 0; }
+  article h2 {
+    font-family: 'Archivo', sans-serif; font-weight: 800; font-size: clamp(22px, 2.4vw, 30px);
+    letter-spacing: -0.02em; margin: 0 0 18px; display: flex; align-items: baseline; gap: 14px;
+  }
+  article h2 .num {
+    font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 400;
+    color: rgba(242,240,234,0.4); letter-spacing: 0;
+  }
+  article h3 {
+    font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 17px;
+    margin: 28px 0 12px; letter-spacing: -0.01em;
+  }
+  article p {
+    font-size: 15.5px; line-height: 1.75; color: rgba(242,240,234,0.8); margin: 0 0 16px;
+    max-width: 74ch;
+  }
+  article ul { margin: 0 0 16px; padding-left: 22px; max-width: 74ch; }
+  article li { font-size: 15.5px; line-height: 1.75; color: rgba(242,240,234,0.8); margin-bottom: 8px; }
+  article strong { color: #F2F0EA; font-weight: 600; }
+  article a.inline-link { border-bottom: 1px solid rgba(242,240,234,0.4); transition: border-color 200ms ease; }
+  article a.inline-link:hover { border-color: #F2F0EA; }
+
+  .table-wrap { overflow-x: auto; margin: 20px 0 24px; border: 1px solid rgba(242,240,234,0.16); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  th, td {
+    text-align: left; padding: 14px 18px; font-size: 13.5px; line-height: 1.55;
+    border-bottom: 1px solid rgba(242,240,234,0.12); color: rgba(242,240,234,0.8);
+  }
+  th {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: rgba(242,240,234,0.55); background: rgba(242,240,234,0.04);
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .callout {
+    border: 1px solid rgba(242,240,234,0.2); border-radius: 14px; padding: 24px 28px;
+    background: rgba(242,240,234,0.04); margin: 24px 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .contact-card {
+    border: 1px solid rgba(242,240,234,0.2); border-radius: 16px; padding: 32px;
+    background: rgba(242,240,234,0.03); max-width: 74ch;
+  }
+  .contact-card p { margin-bottom: 8px; }
+  .contact-card a.inline-link { color: #F2F0EA; }
+
+  footer { background: #0C0B0A; color: #F2F0EA; padding: 60px 0 40px; border-top: 1px solid rgba(242,240,234,0.14); }
+  footer .foot-inner { max-width: 1360px; margin: 0 auto; padding: 0 48px; }
+  footer .foot-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em;
+    color: rgba(242,240,234,0.55);
+  }
+  footer .foot-links { display: flex; gap: 26px; flex-wrap: wrap; }
+  footer .foot-links a { transition: color 220ms ease; }
+  footer .foot-links a:hover { color: #F2F0EA; }
+
+  @media (max-width: 860px) {
+    .td-pad { padding-left: 22px; padding-right: 22px; }
+    .hero, .layout, footer .foot-inner { padding-left: 22px; padding-right: 22px; }
+    .layout { grid-template-columns: 1fr; gap: 36px; }
+    nav.toc { position: static; border-left: none; padding-left: 0; border-top: 1px solid rgba(242,240,234,0.14); padding-top: 20px; flex-direction: row; flex-wrap: wrap; }
+    nav.toc a { padding: 6px 12px 6px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="td-pad">
+  <a href="index.html" class="td-word">Thinkers <em>&amp;</em> Doers</a>
+  <a href="index.html" class="td-back">← Back to site</a>
+</header>
+
+<section class="hero">
+  <div class="eyebrow"><span class="dot"></span>Legal</div>
+  <h1>Privacy <em>Policy</em></h1>
+  <p class="lede">How Thinkers &amp; Doers, a technology collective convened by Coditation, collects, uses, and protects information about the people who apply for, attend, or engage with our table.</p>
+  <div class="meta-row">
+    <span>Effective: August 20, 2026</span>
+    <span>Last updated: August 20, 2026</span>
+    <span>thethinkersanddoers.studio</span>
+  </div>
+</section>
+
+<div class="layout">
+  <nav class="toc">
+    <div class="toc-label">On this page</div>
+    <a href="#overview">1. Overview</a>
+    <a href="#collect">2. Information we collect</a>
+    <a href="#use">3. How we use it</a>
+    <a href="#share">4. Sharing &amp; disclosure</a>
+    <a href="#cookies">5. Cookies &amp; analytics</a>
+    <a href="#thirdparty">6. Third-party services</a>
+    <a href="#retention">7. Data retention</a>
+    <a href="#security">8. Security</a>
+    <a href="#rights">9. Your rights &amp; choices</a>
+    <a href="#children">10. Children's privacy</a>
+    <a href="#international">11. International transfers</a>
+    <a href="#changes">12. Changes to this policy</a>
+    <a href="#contact">13. Contact us</a>
+  </nav>
+
+  <article>
+    <section id="overview">
+      <h2><span class="num">01</span>Overview</h2>
+      <p>Thinkers &amp; Doers is a recurring table for technology and business leaders, convened by Coditation. This policy explains what information we gather when you apply for a seat, register for a session, subscribe to updates, or otherwise interact with our website and events, and what we do with it.</p>
+      <p>By applying to attend, registering, or otherwise submitting information to us, you agree to the collection and use of information as described here. If you don't agree, please don't submit information through our forms or attend our sessions.</p>
+    </section>
+
+    <section id="collect">
+      <h2><span class="num">02</span>Information we collect</h2>
+      <p>We collect information in three ways: what you give us directly, what we gather automatically, and what we receive from third parties who help us run the table.</p>
+      <h3>Information you provide</h3>
+      <ul>
+        <li><strong>Application &amp; registration details</strong> — name, email address, job title, company, and any context you share about why you'd like a seat at the table.</li>
+        <li><strong>Correspondence</strong> — anything you send us by email or through a contact form.</li>
+        <li><strong>Session content</strong> — if you speak, ask a question, or contribute during a session, notes, photos, or recordings may capture that contribution.</li>
+      </ul>
+      <h3>Information collected automatically</h3>
+      <ul>
+        <li><strong>Usage data</strong> — pages viewed, links clicked, referring pages, device and browser type, and approximate location (derived from IP address).</li>
+        <li><strong>Cookies &amp; similar technologies</strong> — see <a href="#cookies" class="inline-link">Section 5</a>.</li>
+      </ul>
+      <h3>Information from third parties</h3>
+      <p>When you book time with us through a scheduling tool such as Calendly, or apply via a linked form, we receive the details you submit there, subject to that provider's own privacy practices.</p>
+    </section>
+
+    <section id="use">
+      <h2><span class="num">03</span>How we use it</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Purpose</th><th>What we do</th></tr></thead>
+          <tbody>
+            <tr><td>Running the table</td><td>Reviewing applications, confirming seats, and organizing sessions and follow-ups.</td></tr>
+            <tr><td>Communication</td><td>Sending confirmations, reminders, and — if you've opted in — updates about upcoming sessions.</td></tr>
+            <tr><td>Improving the experience</td><td>Understanding how people use the site so we can make it clearer and faster.</td></tr>
+            <tr><td>Safety &amp; integrity</td><td>Detecting spam, abuse, or fraudulent applications.</td></tr>
+            <tr><td>Legal compliance</td><td>Meeting obligations we're subject to and responding to lawful requests.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>We do not use your information to make automated decisions that produce legal or similarly significant effects about you.</p>
+    </section>
+
+    <section id="share">
+      <h2><span class="num">04</span>Sharing &amp; disclosure</h2>
+      <p>We don't sell your personal information. We share it only in these circumstances:</p>
+      <ul>
+        <li><strong>Service providers</strong> — vendors who help us operate the site and events (for example, hosting, email delivery, and scheduling providers), bound by confidentiality and data-protection obligations.</li>
+        <li><strong>Coditation</strong> — Thinkers &amp; Doers is convened by Coditation, and relevant application and attendance information may be shared internally within Coditation for the purpose of running the series.</li>
+        <li><strong>Legal &amp; safety</strong> — where required by law, or where we believe in good faith it's necessary to protect the rights, property, or safety of Thinkers &amp; Doers, our attendees, or the public.</li>
+        <li><strong>Business transfers</strong> — in connection with a merger, acquisition, or sale of assets, subject to the recipient honoring the commitments in this policy.</li>
+      </ul>
+    </section>
+
+    <section id="cookies">
+      <h2><span class="num">05</span>Cookies &amp; analytics</h2>
+      <p>We use a small set of cookies and similar technologies to keep the site working and to understand how it's used:</p>
+      <ul>
+        <li><strong>Essential cookies</strong> — required for core site functionality; these can't be switched off.</li>
+        <li><strong>Analytics cookies</strong> — help us understand aggregate traffic and usage patterns so we can improve the site.</li>
+      </ul>
+      <p>You can control cookies through your browser settings. Blocking essential cookies may affect how parts of the site work.</p>
+    </section>
+
+    <section id="thirdparty">
+      <h2><span class="num">06</span>Third-party services</h2>
+      <p>Our site links to or embeds third-party services — for example, a scheduling tool for booking calls. When you interact with these services, their own privacy policies govern how they handle your information. We encourage you to review those policies before providing information through them.</p>
+    </section>
+
+    <section id="retention">
+      <h2><span class="num">07</span>Data retention</h2>
+      <p>We keep personal information for as long as reasonably necessary to fulfill the purposes described in this policy — for example, for the duration of the application and event cycle, plus a reasonable period afterward for record-keeping, follow-up, and legal compliance. We periodically review and remove information we no longer need.</p>
+    </section>
+
+    <section id="security">
+      <h2><span class="num">08</span>Security</h2>
+      <p>We use reasonable administrative, technical, and physical safeguards designed to protect the information we hold. No method of transmission or storage is completely secure, so we can't guarantee absolute security.</p>
+    </section>
+
+    <section id="rights">
+      <h2><span class="num">09</span>Your rights &amp; choices</h2>
+      <p>Depending on where you're located, you may have the right to access, correct, delete, or receive a copy of your personal information, and to object to or restrict certain processing. To exercise any of these rights, contact us using the details in <a href="#contact" class="inline-link">Section 13</a>.</p>
+      <div class="callout">
+        <p><strong>Unsubscribing.</strong> Every email update we send includes an unsubscribe link. You can also ask us directly to stop contacting you at any time.</p>
+      </div>
+    </section>
+
+    <section id="children">
+      <h2><span class="num">10</span>Children's privacy</h2>
+      <p>Thinkers &amp; Doers is intended for working professionals and is not directed at children. We don't knowingly collect personal information from anyone under 16. If you believe a child has provided us with information, please contact us and we'll delete it.</p>
+    </section>
+
+    <section id="international">
+      <h2><span class="num">11</span>International transfers</h2>
+      <p>We and our service providers may process information in countries other than the one you live in. Where required, we take steps intended to ensure appropriate safeguards are in place for these transfers.</p>
+    </section>
+
+    <section id="changes">
+      <h2><span class="num">12</span>Changes to this policy</h2>
+      <p>We may update this policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. We'll update the "Last updated" date above, and where changes are material, we'll take reasonable steps to let you know.</p>
+    </section>
+
+    <section id="contact">
+      <h2><span class="num">13</span>Contact us</h2>
+      <div class="contact-card">
+        <p><strong>Questions about this policy or your information?</strong></p>
+        <p>Email <a href="mailto:hello@thethinkersanddoers.studio" class="inline-link">hello@thethinkersanddoers.studio</a></p>
+        <p>Or reach Coditation directly at <a href="mailto:privacy@coditation.com" class="inline-link">privacy@coditation.com</a></p>
+      </div>
+    </section>
+  </article>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <div class="foot-row">
+      <span>thethinkersanddoers.studio</span>
+      <div class="foot-links">
+        <a href="index.html">Home</a>
+        <a href="privacy-policy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+      <span>© 2026</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
