@@ -599,4 +599,71 @@
 </div>
 
 
+
+<script>
+/* Thinkers & Doers interaction layer — mirrors the reference animation behavior. */
+document.addEventListener('DOMContentLoaded', function () {
+  const hero = document.querySelector('#top');
+  const glow = hero && hero.querySelector('[data-hero-glow], [style*="radial-gradient(circle, rgba(242,240,234,0.10)"]');
+  const parallax = hero && hero.querySelector('[data-parallax="1"]');
+
+  // Scroll reveal: same timing/easing behavior as the reference.
+  const targets = document.querySelectorAll('[data-reveal="1"]');
+  const show = (el) => {
+    el.style.transition = el.style.transition ||
+      'opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1)';
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  };
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const siblings = Array.from(entry.target.parentElement ? entry.target.parentElement.children : [])
+          .filter((node) => node.dataset && node.dataset.reveal === '1');
+        const i = Math.max(0, siblings.indexOf(entry.target));
+        setTimeout(() => show(entry.target), Math.min(i, 8) * 90);
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+    targets.forEach((target) => io.observe(target));
+    setTimeout(() => document.querySelectorAll('[data-reveal="1"]').forEach(show), 3500);
+  } else {
+    targets.forEach(show);
+  }
+
+  // Hero cursor glow: follows the mouse with the same smooth 600ms motion.
+  if (hero && glow) {
+    const moveGlow = (e) => {
+      const rect = hero.getBoundingClientRect();
+      glow.style.transform = 'translate(' + (e.clientX - rect.left) + 'px,' +
+        (e.clientY - rect.top) + 'px)';
+    };
+    hero.addEventListener('mousemove', moveGlow);
+    const rect = hero.getBoundingClientRect();
+    glow.style.transform = 'translate(' + rect.width * 0.62 + 'px,' + rect.height * 0.42 + 'px)';
+  }
+
+  // Hero parallax on scroll: same 110px maximum movement and fade.
+  const updateParallax = () => {
+    if (!hero || !parallax) return;
+    const heroHeight = hero.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    if (heroHeight > viewportHeight * 1.15) {
+      parallax.style.transform = '';
+      parallax.style.opacity = '';
+      return;
+    }
+    const span = Math.max(240, heroHeight - 120);
+    const progress = Math.min(1, Math.max(0, window.scrollY / span));
+    parallax.style.transform = 'translateY(' + (progress * 110) + 'px)';
+    parallax.style.opacity = String(1 - progress);
+  };
+
+  window.addEventListener('scroll', updateParallax, { passive: true });
+  updateParallax();
+});
+</script>
+
 </body></html>
